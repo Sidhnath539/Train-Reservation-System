@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Railora - Indian Railway Reservation & PNR Status</title>
+  <meta name="description"
+    content="Search trains, check seat availability, book tickets, track PNR status and manage railway bookings with Railora.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="active">Search Trains</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/radar.html"><i class="fa-solid fa-tower-broadcast nav-radar-icon"></i>Live Running Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
+    </div>
+  </header>
+
+  <!-- IRCTC Style Hero Section with Vande Bharat Background -->
+  <section class="irctc-hero-section">
+    <div class="container irctc-hero-content">
+      <div class="irctc-card-wrapper">
+        <!-- Top Navy Tabs -->
+        <div class="irctc-top-tabs">
+          <a href="/pnr.html" class="irctc-tab">
+            <i class="fa-solid fa-clipboard-check"></i>
+            <span>PNR STATUS</span>
+          </a>
+          <a href="/radar.html" class="irctc-tab">
+            <i class="fa-solid fa-tower-broadcast"></i>
+            <span>RUNNING STATUS</span>
+          </a>
+          <a href="/trains.html" class="irctc-tab">
+            <i class="fa-solid fa-chart-simple"></i>
+            <span>CHARTS / VACANCY</span>
+          </a>
+        </div>
+
+        <!-- White Book Ticket Card -->
+        <div class="irctc-card">
+          <h1 class="irctc-card-title">BOOK TICKET</h1>
+
+          <form id="hero-search-form">
+            <!-- Row 1: From Station <-> To Station -->
+            <div class="irctc-row irctc-stations-row">
+              <div class="irctc-field irctc-from-field">
+                <div class="irctc-input-wrap">
+                  <span class="irctc-icon">
+                    <i class="fa-solid fa-location-arrow icon-svg-primary"></i>
+                  </span>
+                  <input type="text" id="from-station" class="irctc-input" list="stations-datalist" placeholder="From"
+                    value="New Delhi (NDLS)" required autocomplete="off">
+                </div>
+              </div>
+
+              <button type="button" class="irctc-swap" id="btn-swap" title="Swap Stations">
+                <i class="fa-solid fa-right-left icon-svg-primary"></i>
+              </button>
+
+              <div class="irctc-field irctc-to-field">
+                <div class="irctc-input-wrap">
+                  <span class="irctc-icon">
+                    <i class="fa-solid fa-location-dot icon-svg-primary"></i>
+                  </span>
+                  <input type="text" id="to-station" class="irctc-input" list="stations-datalist" placeholder="To"
+                    value="Howrah Junction (HWH)" required autocomplete="off">
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 2: Date + Travel Class -->
+            <div class="irctc-row irctc-date-class-row">
+              <div class="irctc-field irctc-date-field">
+                <label class="irctc-mini-label" for="journey-date">DD/MM/YYYY *</label>
+                <div class="irctc-input-wrap">
+                  <span class="irctc-icon">
+                    <i class="fa-solid fa-calendar-days icon-svg-primary"></i>
+                  </span>
+                  <input type="date" id="journey-date" class="irctc-input" required>
+                </div>
+              </div>
+
+              <div class="irctc-field irctc-class-field">
+                <div class="irctc-input-wrap">
+                  <span class="irctc-icon">
+                    <i class="fa-solid fa-briefcase icon-svg-primary"></i>
+                  </span>
+                  <select id="travel-class" class="irctc-input irctc-select">
+                    <option value="ALL">All Classes</option>
+                    <option value="1A">AC First Class (1A)</option>
+                    <option value="2A">AC 2 Tier (2A)</option>
+                    <option value="3A">AC 3 Tier (3A)</option>
+                    <option value="SL">Sleeper (SL)</option>
+                    <option value="CC">AC Chair Car (CC)</option>
+                    <option value="EC">Exec. Chair Car (EC)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 3: Quota -->
+            <div class="irctc-row">
+              <div class="irctc-field">
+                <div class="irctc-input-wrap">
+                  <span class="irctc-icon">
+                    <i class="fa-solid fa-table-cells-large icon-svg-primary"></i>
+                  </span>
+                  <select id="quota" class="irctc-input irctc-select">
+                    <option value="GENERAL">GENERAL</option>
+                    <option value="TATKAL">TATKAL</option>
+                    <option value="LADIES">LADIES</option>
+                    <option value="SENIOR_CITIZEN">SENIOR CITIZEN</option>
+                    <option value="PREMIUM_TATKAL">PREMIUM TATKAL</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Concessions Checkboxes Grid -->
+            <div class="irctc-checkboxes">
+              <div class="irctc-chk-col">
+                <label class="irctc-chk-label">
+                  <input type="checkbox" id="chk-disability">
+                  <span>Person With Disability Concession</span>
+                </label>
+                <label class="irctc-chk-label">
+                  <input type="checkbox" id="chk-railway-pass">
+                  <span>Railway Pass Concession</span>
+                </label>
+              </div>
+              <div class="irctc-chk-col">
+                <label class="irctc-chk-label">
+                  <input type="checkbox" id="chk-flexible-date">
+                  <span>Flexible With Date</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Search Button -->
+            <div class="irctc-submit-row">
+              <button type="submit" class="irctc-btn-search">Search Trains</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Datalist for Stations autocomplete -->
+  <datalist id="stations-datalist"></datalist>
+
+  <!-- Quick PNR Tracker & Popular Routes -->
+  <main class="container">
+    <!-- Quick PNR Banner -->
+    <div class="quick-pnr-banner">
+      <div>
+        <h3 class="quick-pnr-title">Quick PNR Status Inquiry</h3>
+        <p class="quick-pnr-desc">Check current reservation status,
+          coach & berth allocation instantly.</p>
+      </div>
+      <form id="quick-pnr-form" class="quick-pnr-form">
+        <input type="text" id="quick-pnr-input" class="form-control quick-pnr-input" placeholder="Enter 10-digit PNR" maxlength="10" required>
+        <button type="submit" class="btn btn-primary quick-pnr-btn">Track</button>
+      </form>
+    </div>
+
+    <!-- Popular Routes Grid -->
+    <div class="section-header">
+      <h2 class="section-title">Popular Railway Routes</h2>
+      <p class="section-subtitle">Direct, high-speed connectivity between India's premier metropolitan centers</p>
+    </div>
+
+    <div class="routes-grid">
+      <!-- Route 1 -->
+      <div class="route-card" onclick="selectPopularRoute('NDLS', 'HWH')">
+        <div class="route-top">
+          <span class="route-tag">Rajdhani Express</span>
+          <span class="route-trains">Daily Service</span>
+        </div>
+        <div class="route-cities">
+          New Delhi
+          <i class="fa-solid fa-arrow-right icon-svg-orange route-arrow-icon"></i>
+          Howrah
+        </div>
+        <div class="route-info">
+          <span>NDLS ➔ HWH</span>
+          <span>From <strong>₹2,020</strong></span>
+        </div>
+      </div>
+
+      <!-- Route 2 -->
+      <div class="route-card" onclick="selectPopularRoute('NDLS', 'BCT')">
+        <div class="route-top">
+          <span class="route-tag">Tejas Rajdhani</span>
+          <span class="route-trains">Superfast 15h</span>
+        </div>
+        <div class="route-cities">
+          New Delhi
+          <i class="fa-solid fa-arrow-right icon-svg-orange route-arrow-icon"></i>
+          Mumbai Central
+        </div>
+        <div class="route-info">
+          <span>NDLS ➔ BCT</span>
+          <span>From <strong>₹2,075</strong></span>
+        </div>
+      </div>
+
+      <!-- Route 3 -->
+      <div class="route-card" onclick="selectPopularRoute('NDLS', 'BSB')">
+        <div class="route-top">
+          <span class="route-tag">Vande Bharat</span>
+          <span class="route-trains">Express 8h</span>
+        </div>
+        <div class="route-cities">
+          New Delhi
+          <i class="fa-solid fa-arrow-right icon-svg-orange route-arrow-icon"></i>
+          Varanasi
+        </div>
+        <div class="route-info">
+          <span>NDLS ➔ BSB</span>
+          <span>From <strong>₹1,750</strong></span>
+        </div>
+      </div>
+
+      <!-- Route 4 -->
+      <div class="route-card" onclick="selectPopularRoute('CSMT', 'MAO')">
+        <div class="route-top">
+          <span class="route-tag">Jan Shatabdi</span>
+          <span class="route-trains">Scenic Konkan</span>
+        </div>
+        <div class="route-cities">
+          Mumbai CSMT
+          <i class="fa-solid fa-arrow-right icon-svg-orange route-arrow-icon"></i>
+          Madgaon (Goa)
+        </div>
+        <div class="route-info">
+          <span>CSMT ➔ MAO</span>
+          <span>From <strong>₹315</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Highlights -->
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-icon-wrapper">
+          <i class="fa-solid fa-shield-halved icon-svg-primary feature-icon-lg"></i>
+        </div>
+        <h3 class="feature-title">Guaranteed Safe Booking</h3>
+        <p class="feature-desc">Every reservation runs inside an ACID-compliant MySQL database transaction, preventing
+          seat overselling.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-wrapper">
+          <i class="fa-solid fa-coins icon-svg-primary feature-icon-lg"></i>
+        </div>
+        <h3 class="feature-title">Instant Online Refunds</h3>
+        <p class="feature-desc">Cancel tickets directly with auto-calculated cancellation charges and immediate seat
+          restoration.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-wrapper">
+          <i class="fa-solid fa-bolt icon-svg-primary feature-icon-lg"></i>
+        </div>
+        <h3 class="feature-title">Real-Time PNR Tracking</h3>
+        <p class="feature-desc">Live lookups for Coach number, Berth number, and Confirm/Waitlist statuses across all
+          classes.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-brand-logo-index">
+            <div class="brand-icon footer-brand-icon-index">
+              <i class="fa-solid fa-train icon-svg-white footer-brand-fa"></i>
+            </div>
+            <div class="brand-name">Rail<span>ora</span></div>
+          </div>
+          <p>Indian Railway Passenger Reservation System powered by Node.js, Express, and MySQL. Designed for speed,
+            high concurrency, and dependable rail travel bookings.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Passenger Services</h4>
+          <ul>
+            <li><a href="/">Book Train Ticket</a></li>
+            <li><a href="/pnr.html">PNR Status Inquiry</a></li>
+            <li><a href="/my-bookings.html">My Bookings</a></li>
+            <li><a href="/trains.html">Train Schedules</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Security & Architecture</h4>
+          <ul>
+            <li><a href="#">ACID Database Transactions</a></li>
+            <li><a href="#">Parameterized SQL Queries</a></li>
+            <li><a href="#">Bcrypt Password Hashing</a></li>
+            <li><a href="/admin.html">Admin Operations</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>24x7 Railway Helplines</h4>
+          <p class="helpline-text">Passenger Enquiry: <strong>139</strong></p>
+          <p class="helpline-text">Security & Medical: <strong>182</strong></p>
+          <p class="helpline-text-last">Support: support@railora.gov.in</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+
+</html>

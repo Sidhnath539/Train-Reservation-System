@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passenger Details & Ticket Booking - Railora</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/">Search Trains</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/radar.html"><i class="fa-solid fa-tower-broadcast nav-radar-icon"></i>Live Running Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions"></div>
+    </div>
+  </header>
+
+  <div class="container booking-container">
+    <!-- Main Passenger Form Card -->
+    <main class="booking-main-card">
+      <div class="booking-header">
+        <h2 class="booking-title">Passenger & Journey Details</h2>
+        <p class="booking-subtitle">Please enter full passenger names as
+          they appear on official government identification.</p>
+      </div>
+
+      <!-- Train Summary Banner -->
+      <div class="booking-train-banner">
+        <div>
+          <div class="summary-train-title" id="summary-train-title">Loading
+            Train...</div>
+          <div class="summary-route" id="summary-route">...</div>
+          <div class="summary-meta-line">
+            Date: <strong id="summary-date">...</strong> | Class: <strong id="summary-class">...</strong> | Quota:
+            <strong id="summary-quota">...</strong>
+          </div>
+        </div>
+        <div class="summary-action-wrap text-right">
+          <span id="summary-availability" class="badge badge-cnf summary-avail-badge">AVAILABLE</span>
+          <button type="button" id="btn-recheck-avail" class="btn btn-outline btn-sm btn-recheck-avail" title="Check live seat availability">
+            <i class="fa-solid fa-arrows-rotate btn-avail-icon" id="avail-refresh-spinner"></i>
+            Check Live Availability
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-Time Seat Availability Panel -->
+      <section class="avail-widget-card" id="avail-widget-card">
+        <div class="avail-widget-header">
+          <div class="avail-widget-header-title">
+            <div class="avail-pulse-indicator">
+              <span class="avail-pulse-dot"></span>
+              <strong class="avail-pulse-text">Live PRS Seat Status</strong>
+            </div>
+            <span class="avail-last-updated" id="avail-last-updated">Checking PRS database...</span>
+          </div>
+          <button type="button" class="avail-toggle-collapse-btn" id="btn-toggle-avail-card" aria-expanded="true">
+            <span id="avail-collapse-text">Hide Details</span>
+            <i class="fa-solid fa-chevron-up" id="avail-collapse-icon"></i>
+          </button>
+        </div>
+
+        <div class="avail-widget-body" id="avail-widget-body">
+          <!-- Passenger Confirmation Status Banner -->
+          <div class="avail-passenger-feedback" id="avail-passenger-feedback">
+            <div class="avail-feedback-icon" id="avail-feedback-icon">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="avail-feedback-content">
+              <div class="avail-feedback-title" id="avail-feedback-title">Checking Availability...</div>
+              <div class="avail-feedback-desc" id="avail-feedback-desc">Verifying seat allocations for your passenger list.</div>
+            </div>
+            <div class="avail-chance-chip" id="avail-chance-chip">
+              <span class="chance-label">Confirmation Probability</span>
+              <strong class="chance-val" id="avail-chance-val">100%</strong>
+            </div>
+          </div>
+
+          <!-- Quick Stats Grid -->
+          <div class="avail-stats-grid">
+            <div class="avail-stat-item">
+              <div class="avail-stat-label">Available Berths</div>
+              <div class="avail-stat-value text-cnf" id="stat-avail-seats">--</div>
+            </div>
+            <div class="avail-stat-item">
+              <div class="avail-stat-label">Total Coach Berths</div>
+              <div class="avail-stat-value" id="stat-total-seats">--</div>
+            </div>
+            <div class="avail-stat-item">
+              <div class="avail-stat-label">Current Waitlist</div>
+              <div class="avail-stat-value text-muted" id="stat-waitlist-seats">0</div>
+            </div>
+            <div class="avail-stat-item">
+              <div class="avail-stat-label">Booking Quota</div>
+              <div class="avail-stat-value" id="stat-quota-type">GENERAL</div>
+            </div>
+          </div>
+
+          <!-- Class Availability Switcher on Same Train -->
+          <div class="avail-class-switch-section">
+            <div class="avail-subheading">
+              <span>Check & Switch Class on this Train</span>
+              <small class="avail-subheading-tip">Click any class below to switch instantly without losing passenger details</small>
+            </div>
+            <div class="avail-class-chips-grid" id="avail-class-chips-container">
+              <!-- Dynamically rendered class cards -->
+            </div>
+          </div>
+
+          <!-- 6-Day Alternate Dates Availability Strip -->
+          <div class="avail-calendar-section">
+            <div class="avail-subheading">
+              <span>Alternate Journey Dates Availability</span>
+              <small class="avail-subheading-tip">Check consecutive dates if seats are limited or waitlisted</small>
+            </div>
+            <div class="avail-dates-strip" id="avail-dates-strip-container">
+              <!-- Dynamically rendered date cards -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Passenger Form -->
+      <form id="booking-form">
+        <div id="passengers-container">
+          <!-- Passenger Row 1 -->
+          <div class="passenger-row" id="passenger-row-1">
+            <div class="passenger-row-header">
+              <span>Passenger #1 (Primary)</span>
+            </div>
+            <div class="passenger-inputs-grid">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control p-name" placeholder="As per Aadhaar/Govt ID" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Age</label>
+                <input type="number" class="form-control p-age" min="1" max="110" placeholder="Years" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Gender</label>
+                <select class="form-control p-gender" required>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Berth Choice</label>
+                <select class="form-control p-berth">
+                  <option value="No Preference">No Preference</option>
+                  <option value="Lower">Lower Berth</option>
+                  <option value="Middle">Middle Berth</option>
+                  <option value="Upper">Upper Berth</option>
+                  <option value="Side Lower">Side Lower</option>
+                  <option value="Side Upper">Side Upper</option>
+                  <option value="Window">Window Seat</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Passenger Button -->
+        <div class="add-passenger-wrap">
+          <button type="button" id="btn-add-passenger" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-plus icon-svg-primary btn-icon-plus-primary"></i>
+            Add Another Passenger (Max 6)
+          </button>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+          <button type="submit" class="btn btn-search btn-proceed-pay">
+            Proceed to Secure Payment
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <!-- Right Column: Fare Breakdown Card -->
+    <aside class="fare-summary-card">
+      <h3 class="fare-title">Fare Summary</h3>
+
+      <!-- Real-Time Seat Status Box in Sidebar -->
+      <div class="sidebar-avail-box" id="sidebar-avail-box">
+        <div class="sidebar-avail-header">
+          <span class="sidebar-avail-label">Live Seat Status</span>
+          <span id="sidebar-quota-pill" class="sidebar-quota-pill">GENERAL</span>
+        </div>
+        <div class="sidebar-avail-status-row">
+          <span id="sidebar-avail-badge" class="badge badge-cnf">AVL --</span>
+          <span id="sidebar-chance-text" class="sidebar-chance-text">Guaranteed Berth</span>
+        </div>
+        <div class="sidebar-avail-note" id="sidebar-avail-note">Verifying seat allocation...</div>
+      </div>
+
+      <div class="fare-row">
+        <span>Base Ticket Fare</span>
+        <span id="fare-base">₹0.00</span>
+      </div>
+
+      <div class="fare-row">
+        <span>Passenger Count</span>
+        <span id="fare-count">1 Passenger</span>
+      </div>
+
+      <div class="fare-row">
+        <span>Tickets Subtotal</span>
+        <strong id="fare-subtotal" class="fare-subtotal-val">₹0.00</strong>
+      </div>
+
+      <div class="fare-row">
+        <span>Goods & Services Tax (GST 5%)</span>
+        <span id="fare-gst">₹0.00</span>
+      </div>
+
+      <div class="fare-row">
+        <span>IRCTC Convenience Fee</span>
+        <span id="fare-service">₹15.00</span>
+      </div>
+
+      <div class="fare-row total">
+        <span>Total Payable</span>
+        <span id="fare-total">₹0.00</span>
+      </div>
+
+      <div class="fare-guarantee-note">
+        <i class="fa-solid fa-shield-halved icon-svg-primary fare-guarantee-icon"></i> All
+        transactions are protected via atomic MySQL reservation locks. In case of cancellation, refunds are credited
+        back automatically.
+      </div>
+    </aside>
+  </div>
+
+  <!-- Safe Payment Gateway Modal -->
+  <div class="modal-overlay" id="payment-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Railora Payment Gateway</h3>
+        <button type="button" class="modal-close" onclick="closePaymentModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="pay-modal-amount-header">
+          <div class="pay-modal-amount-label">Total
+            Amount To Pay</div>
+          <div class="pay-modal-amount-val" id="modal-pay-amount">
+            ₹0.00
+          </div>
+        </div>
+
+        <!-- Live Verified Seat Summary inside Modal -->
+        <div class="modal-seat-verified-banner" id="modal-seat-verified-banner">
+          <div class="modal-seat-verified-icon">
+            <i class="fa-solid fa-ticket"></i>
+          </div>
+          <div class="modal-seat-verified-info">
+            <div class="modal-seat-verified-title" id="modal-verified-status">Seats Verified & Reserved</div>
+            <div class="modal-seat-verified-sub" id="modal-verified-details">Live PRS seat locks are active for this transaction.</div>
+          </div>
+        </div>
+
+        <div class="pay-methods-group">
+          <label class="form-label">Select Payment Method</label>
+          <div class="pay-methods-grid">
+            <label class="pay-method-card active">
+              <input type="radio" name="pay-method" checked class="pay-method-radio">
+              <div class="pay-method-name">UPI / QR</div>
+            </label>
+            <label class="pay-method-card">
+              <input type="radio" name="pay-method" class="pay-method-radio">
+              <div class="pay-method-name">Debit / Credit</div>
+            </label>
+            <label class="pay-method-card">
+              <input type="radio" name="pay-method" class="pay-method-radio">
+              <div class="pay-method-name">Net Banking</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="demo-sandbox-card">
+          <div class="demo-sandbox-title">Demo Payment Sandbox</div>
+          <div class="demo-sandbox-text">
+            Simulating instant 256-bit SSL encrypted transaction with Indian Railways PRS gateway.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closePaymentModal()">Cancel</button>
+        <button type="button" class="btn btn-secondary btn-confirm-pay" id="btn-confirm-pay">
+          Confirm & Pay Securely
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Official Passenger Reservation System Interface</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/book.js"></script>
+</body>
+
+</html>

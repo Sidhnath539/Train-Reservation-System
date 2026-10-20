@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Train Availability & Seat Reservation - Railora</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="active">Search Trains</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/radar.html"><i class="fa-solid fa-tower-broadcast nav-radar-icon"></i>Live Running Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions"></div>
+    </div>
+  </header>
+
+  <!-- Search Header Bar -->
+  <div class="search-header-bar">
+    <div class="container search-header-content">
+      <div class="journey-summary">
+        <h2 id="search-summary-title">Loading Route Details...</h2>
+        <div class="journey-meta" id="search-summary-meta">
+          <span>Connecting to Indian Railways schedule...</span>
+        </div>
+      </div>
+      <div>
+        <button type="button" class="btn btn-outline btn-outline-white"
+          onclick="document.getElementById('modify-search-drawer').classList.toggle('active')">
+          <i class="fa-solid fa-magnifying-glass icon-svg-white btn-icon-modify"></i>
+          Modify Search
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modify Search Dropdown / Drawer -->
+  <div id="modify-search-drawer" class="container">
+    <div class="modify-search-card">
+      <form id="modify-search-form" class="modify-search-form">
+        <div class="form-group">
+          <label class="form-label">From</label>
+          <div class="input-container">
+            <input type="text" id="mod-from" class="form-control form-control-indented" list="modify-stations-datalist"
+              placeholder="Type station name or code..." required autocomplete="off">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">To</label>
+          <div class="input-container">
+            <input type="text" id="mod-to" class="form-control form-control-indented" list="modify-stations-datalist"
+              placeholder="Type station name or code..." required autocomplete="off">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" id="mod-date" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Quota</label>
+          <select id="mod-quota" class="form-control">
+            <option value="GENERAL">General (GN)</option>
+            <option value="TATKAL">Tatkal (TQ)</option>
+            <option value="LADIES">Ladies (LD)</option>
+            <option value="SENIOR_CITIZEN">Sr. Citizen (SS)</option>
+            <option value="PREMIUM_TATKAL">Premium Tatkal (PT)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-secondary btn-modify-update">Update</button>
+      </form>
+    </div>
+  </div>
+
+  <datalist id="modify-stations-datalist"></datalist>
+
+  <!-- Trains Results Layout -->
+  <div class="container trains-layout">
+    <!-- Left Filters Sidebar -->
+    <aside class="filters-sidebar">
+      <div class="filter-header">
+        <h3>Filters</h3>
+        <button type="button" onclick="location.reload()" class="btn btn-outline btn-sm btn-filter-reset">Reset</button>
+      </div>
+
+      <!-- Quota Filter -->
+      <div class="filter-group">
+        <div class="filter-title">Booking Quota</div>
+        <select id="sidebar-quota" class="form-control sidebar-quota-select">
+          <option value="GENERAL">General (GN)</option>
+          <option value="TATKAL">Tatkal (TQ)</option>
+          <option value="LADIES">Ladies (LD)</option>
+          <option value="SENIOR_CITIZEN">Sr. Citizen (SS)</option>
+          <option value="PREMIUM_TATKAL">Premium Tatkal (PT)</option>
+        </select>
+      </div>
+
+      <!-- Train Type -->
+      <div class="filter-group">
+        <div class="filter-title">Train Type</div>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Rajdhani"> Rajdhani
+          Express</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Vande Bharat"> Vande
+          Bharat</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Shatabdi"> Shatabdi
+          Express</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Superfast"> Superfast
+          Express</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Duronto"> Duronto
+          Express</label>
+      </div>
+
+      <!-- Travel Class -->
+      <div class="filter-group">
+        <div class="filter-title">Travel Class</div>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="1A"> AC First Class
+          (1A)</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="2A"> AC 2 Tier (2A)</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="3A"> AC 3 Tier (3A)</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="SL"> Sleeper Class
+          (SL)</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="CC"> AC Chair Car (CC)</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="EC"> Exec. Chair Car
+          (EC)</label>
+      </div>
+    </aside>
+
+    <!-- Trains List Results -->
+    <main id="trains-list">
+      <!-- Dynamic Train Cards Injected here -->
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Fast &amp; Safe Indian Railway Reservations</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/trains.js"></script>
+</body>
+
+</html>

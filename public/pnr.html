@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PNR Status Inquiry & e-Ticket - Railora</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/">Search Trains</a></li>
+        <li><a href="/pnr.html" class="active">PNR Status</a></li>
+        <li><a href="/radar.html"><i class="fa-solid fa-tower-broadcast nav-radar-icon"></i>Live Running Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions"></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- PNR Inquiry Search Box -->
+    <div class="pnr-inquiry-box">
+      <h2 class="pnr-title">Passenger Name Record (PNR) Status</h2>
+      <p class="pnr-subtitle">
+        Track live confirmation probability, coach allocation, and berth status of your Indian Railways journey.
+      </p>
+
+      <form id="pnr-search-form" class="pnr-search-bar">
+        <input type="text" id="pnr-query-input" class="pnr-input" placeholder="Enter 10-Digit PNR" maxlength="10"
+          required>
+        <button type="submit" class="btn btn-search pnr-submit-btn">
+          Get Status
+        </button>
+      </form>
+
+      <div class="pnr-extra-info">
+        <span class="pnr-demo-label">Demo Active PNRs:</span>
+        <button type="button" class="pnr-demo-chip" onclick="searchSamplePNR('8429104821')">8429104821 (Rajdhani 3A)</button>
+        <button type="button" class="pnr-demo-chip" onclick="searchSamplePNR('2940185930')">2940185930 (Mumbai 2A)</button>
+        <button type="button" class="pnr-demo-chip" onclick="searchSamplePNR('6519284710')">6519284710 (Vande Bharat CC)</button>
+      </div>
+    </div>
+
+    <!-- Ticket Container -->
+    <div id="ticket-result-container">
+      <div class="pnr-placeholder-card">
+        <i class="fa-solid fa-ticket icon-svg-primary pnr-placeholder-icon"></i>
+        <h3 class="pnr-placeholder-title">Enter your 10-digit PNR above</h3>
+        <p class="pnr-placeholder-desc">Your electronic reservation slip and
+          passenger status will Show here.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Ticket Cancellation Modal -->
+  <div class="modal-overlay" id="cancel-ticket-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title modal-title-danger">Confirm Ticket Cancellation</h3>
+        <button type="button" class="modal-close" onclick="closeCancelModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="cancel-modal-prompt">
+          Are you sure you want to cancel the ticket for PNR <strong id="cancel-pnr-display"
+            class="text-mono">...</strong>?
+        </p>
+
+        <div class="cancel-summary-box">
+          <div class="cancel-summary-row">
+            <span>Original Paid Fare:</span>
+            <strong id="cancel-fare-display">₹0.00</strong>
+          </div>
+          <div class="cancel-summary-row cancel-fee-row">
+            <span>IRCTC Cancellation Fee:</span>
+            <span>Applicable Charges Deducted</span>
+          </div>
+          <div class="cancel-summary-total">
+            <span>Estimated Refund:</span>
+            <span id="cancel-refund-display">₹0.00</span>
+          </div>
+        </div>
+
+        <div class="cancel-modal-warning">
+          ⚠️ Once cancelled, all passenger seats are immediately released and made available to other passengers in
+          accordance with Indian Railway reservation guidelines.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeCancelModal()">Keep Ticket</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-cancel">Confirm Cancellation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Official Passenger Reservation System Interface</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/pnr.js"></script>
+</body>
+
+</html>

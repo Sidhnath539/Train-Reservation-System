@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard & Rail Operations - Railora</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Navigation Bar -->
+  <header class="navbar navbar-admin">
+    <div class="container nav-container">
+      <a href="/admin.html" class="brand-logo">
+        <div class="brand-icon brand-icon-admin">
+          <i class="fa-solid fa-user-shield icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge brand-badge-admin">Admin Portal</span>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="/" target="_blank">View Live Website ↗</a></li>
+        <li><a href="/radar.html" target="_blank"><i class="fa-solid fa-tower-broadcast nav-radar-icon"></i>Running
+            Status ↗</a></li>
+        <li><a href="#trains-section">Manage Trains</a></li>
+        <li><a href="#bookings-section">All Bookings</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions"></div>
+    </div>
+  </header>
+
+  <main class="container admin-main">
+    <!-- Welcome Header -->
+    <div class="admin-header-row">
+      <div>
+        <h2 class="admin-page-title">Railway System Operations Dashboard</h2>
+        <p class="admin-page-desc">Real-time metrics, train schedule catalog, and Indian Railways passenger manifest.
+        </p>
+      </div>
+      <div>
+        <button type="button" class="btn btn-secondary btn-open-add-train" id="btn-open-add-train">
+          <i class="fa-solid fa-plus icon-svg-white btn-icon-plus-white"></i>
+          Add New Train
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Metric Cards Grid -->
+    <div class="admin-stats-grid">
+      <!-- Total Trains -->
+      <div class="stat-kpi-card">
+        <div class="stat-icon trains">
+          <i class="fa-solid fa-train icon-svg-primary stat-kpi-icon"></i>
+        </div>
+        <div>
+          <div class="stat-number" id="stat-trains">0</div>
+          <div class="stat-label">Total Trains Active</div>
+        </div>
+      </div>
+
+      <!-- Total Bookings -->
+      <div class="stat-kpi-card">
+        <div class="stat-icon bookings">
+          <i class="fa-solid fa-ticket icon-svg-success stat-kpi-icon"></i>
+        </div>
+        <div>
+          <div class="stat-number" id="stat-bookings">0</div>
+          <div class="stat-label">Total Reservations</div>
+        </div>
+      </div>
+
+      <!-- Confirmed Bookings -->
+      <div class="stat-kpi-card">
+        <div class="stat-icon revenue">
+          <i class="fa-solid fa-circle-check icon-svg-orange stat-kpi-icon"></i>
+        </div>
+        <div>
+          <div class="stat-number" id="stat-confirmed">0</div>
+          <div class="stat-label">Confirmed Tickets</div>
+        </div>
+      </div>
+
+      <!-- Total Revenue -->
+      <div class="stat-kpi-card">
+        <div class="stat-icon users">
+          <i class="fa-solid fa-coins icon-svg-primary stat-kpi-icon"></i>
+        </div>
+        <div>
+          <div class="stat-number stat-revenue-num" id="stat-revenue">₹0.00</div>
+          <div class="stat-label">Total Revenue (₹)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 1: Train Management -->
+    <div class="admin-card" id="trains-section">
+      <div class="admin-card-header">
+        <h3 class="admin-card-heading">Active Train Schedules & Routes</h3>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Train No.</th>
+              <th>Name & Type</th>
+              <th>Route (From ➔ To)</th>
+              <th>Timings</th>
+              <th>Classes Configured</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-trains-tbody">
+            <!-- Injected dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 2: All Bookings Manifest -->
+    <div class="admin-card" id="bookings-section">
+      <div class="admin-card-header">
+        <h3 class="admin-card-heading">Passenger Reservation Manifest</h3>
+        <div class="admin-filter-bar">
+          <input type="text" id="admin-booking-search" class="form-control admin-search-input"
+            placeholder="Search PNR, Train, User...">
+          <select id="admin-booking-status" class="form-control admin-status-select">
+            <option value="ALL">All Statuses</option>
+            <option value="CONFIRMED">Confirmed Only</option>
+            <option value="WAITLISTED">Waitlisted Only</option>
+            <option value="CANCELLED">Cancelled Only</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>PNR</th>
+              <th>Booked By</th>
+              <th>Train</th>
+              <th>Route</th>
+              <th>Journey Date</th>
+              <th>Class</th>
+              <th>Fare Paid</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="admin-bookings-tbody">
+            <!-- Injected dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add New Train Modal -->
+  <div class="modal-overlay" id="add-train-modal">
+    <div class="modal-card modal-card-admin">
+      <div class="modal-header">
+        <h3 class="modal-title">Add New Express Train</h3>
+        <button type="button" class="modal-close" onclick="closeAddTrainModal()">&times;</button>
+      </div>
+      <form id="add-train-form">
+        <div class="modal-body modal-body-train">
+          <div class="form-group">
+            <label class="form-label">Train Number</label>
+            <input type="text" id="train-number" class="form-control" placeholder="e.g. 12424" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Train Name</label>
+            <input type="text" id="train-name" class="form-control" placeholder="e.g. Rajdhani Express" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Source Station</label>
+            <select id="train-source-station" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Destination Station</label>
+            <select id="train-dest-station" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Departure Time</label>
+            <input type="time" id="train-dep-time" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Arrival Time</label>
+            <input type="time" id="train-arr-time" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Total Duration</label>
+            <input type="text" id="train-duration" class="form-control" placeholder="e.g. 14h 30m" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Train Type</label>
+            <select id="train-type" class="form-control">
+              <option value="Rajdhani">Rajdhani Express</option>
+              <option value="Vande Bharat">Vande Bharat Express</option>
+              <option value="Shatabdi">Shatabdi Express</option>
+              <option value="Superfast">Superfast Express</option>
+              <option value="Duronto">Duronto Express</option>
+            </select>
+          </div>
+          <div class="form-group form-group-span2">
+            <label class="form-label">Runs On Days</label>
+            <input type="text" id="train-runs-on" class="form-control" value="Mon, Tue, Wed, Thu, Fri, Sat, Sun"
+              required>
+          </div>
+
+          <div class="train-fares-block">
+            <div class="train-fares-header">Default Class Base Fares (₹)</div>
+            <div class="train-fares-grid">
+              <div class="form-group">
+                <label class="form-label">3A (AC 3 Tier)</label>
+                <input type="number" id="fare-3a" class="form-control" value="1450" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">2A (AC 2 Tier)</label>
+                <input type="number" id="fare-2a" class="form-control" value="2150" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">SL (Sleeper)</label>
+                <input type="number" id="fare-sl" class="form-control" value="480" required>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeAddTrainModal()">Cancel</button>
+          <button type="submit" class="btn btn-secondary">Add Train</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora Admin Operations Console.</div>
+        <div>System Protected with Role-Based Access Control</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+
+</html>

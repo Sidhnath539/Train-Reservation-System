@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings & Travel History - Railora</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/">Search Trains</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/radar.html"><i class="fa-solid fa-tower-broadcast nav-radar-icon"></i>Live Running Status</a></li>
+        <li><a href="/my-bookings.html" class="active">My Bookings</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions"></div>
+    </div>
+  </header>
+
+  <main class="container bookings-main">
+    <div class="bookings-header">
+      <div>
+        <h2 class="bookings-title">My Bookings & e-Tickets</h2>
+        <p class="bookings-subtitle">View your past journeys, download
+          e-tickets, or manage reservation cancellations.</p>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="booking-filter-group">
+        <button type="button" class="booking-filter-btn active btn btn-outline btn-sm" data-filter="ALL">All</button>
+        <button type="button" class="booking-filter-btn btn btn-outline btn-sm"
+          data-filter="CONFIRMED">Confirmed</button>
+        <button type="button" class="booking-filter-btn btn btn-outline btn-sm"
+          data-filter="CANCELLED">Cancelled</button>
+      </div>
+    </div>
+
+    <!-- Bookings Feed -->
+    <div id="my-bookings-container">
+      <!-- Dynamic list from bookings.js -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Official Passenger Reservation System</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/bookings.js"></script>
+</body>
+
+</html>

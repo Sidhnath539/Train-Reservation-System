@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Train Running Status & Delay Inquiry - Railora</title>
+  <meta name="description"
+    content="Check live running train status, delays, intermediate station arrival and departure timings, platform numbers, and real-time journey progress with Railora.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/">Search Trains</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/radar.html" class="active"><i class="fa-solid fa-tower-broadcast nav-radar-icon"></i>Live Running Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Top Control Panel & Telemetry HUD -->
+    <section class="radar-hero-panel">
+      <div class="radar-header-top">
+        <div class="radar-title-group">
+          <h1>
+            <i class="fa-solid fa-tower-broadcast icon-secondary"></i>
+            Live Train Running Status
+          </h1>
+          <div class="radar-subtitle">
+            Real-time train location, running delays, platform numbers, and station halt timings.
+          </div>
+        </div>
+
+        <div class="radar-live-actions">
+          <div class="radar-live-badge">
+            <span class="radar-pulse-dot"></span>
+            <span id="radar-live-label">LIVE STATUS ACTIVE</span>
+          </div>
+
+          <button id="btn-manual-refresh" class="btn btn-outline btn-sm btn-manual-refresh" title="Refresh Live Data">
+            <i class="fa-solid fa-rotate-right" id="refresh-spinner-icon"></i>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Train Selection & Search Controls -->
+      <div class="radar-controls-bar">
+        <div class="radar-select-wrap">
+          <i class="fa-solid fa-train-subway select-icon"></i>
+          <select id="radar-train-select" aria-label="Select Train to Track">
+            <option value="" disabled selected>Loading active trains...</option>
+          </select>
+          <i class="fa-solid fa-chevron-down arrow-icon"></i>
+        </div>
+
+        <div class="radar-quick-group">
+          <input type="text" id="radar-quick-input" placeholder="Enter Train No. (e.g. 12302)"
+            maxlength="6" class="form-input radar-quick-input">
+          <button id="btn-quick-track" class="btn btn-secondary radar-quick-btn">
+            Check Status
+          </button>
+        </div>
+
+        <div class="radar-auto-refresh-wrap">
+          <label class="radar-checkbox-label">
+            <input type="checkbox" id="auto-refresh-toggle" checked class="radar-checkbox-input">
+            <span>Auto Refresh (15s)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Live Telemetry HUD Cards -->
+      <div class="radar-telemetry-hud radar-hud-mt-20">
+        <!-- Card 1: Speed -->
+        <div class="telemetry-card">
+          <div class="telemetry-icon-box telemetry-icon-speed">
+            <i class="fa-solid fa-gauge-high"></i>
+          </div>
+          <div class="telemetry-info">
+            <div class="telemetry-label">Live Speed</div>
+            <div class="telemetry-val" id="hud-speed">-- km/h</div>
+            <div class="telemetry-sub" id="hud-speed-sub">Calculating live fix...</div>
+          </div>
+        </div>
+
+        <!-- Card 2: Status & Delay -->
+        <div class="telemetry-card">
+          <div class="telemetry-icon-box telemetry-icon-status">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div class="telemetry-info">
+            <div class="telemetry-label">Running Status</div>
+            <div class="telemetry-val" id="hud-status">--</div>
+            <div class="telemetry-sub" id="hud-status-sub">Updated just now</div>
+          </div>
+        </div>
+
+        <!-- Card 3: Current Location -->
+        <div class="telemetry-card">
+          <div class="telemetry-icon-box telemetry-icon-location">
+            <i class="fa-solid fa-location-crosshairs"></i>
+          </div>
+          <div class="telemetry-info">
+            <div class="telemetry-label">Current Location</div>
+            <div class="telemetry-val" id="hud-location">--</div>
+            <div class="telemetry-sub" id="hud-coords">Tracking active segment</div>
+          </div>
+        </div>
+
+        <!-- Card 4: Next Halt -->
+        <div class="telemetry-card">
+          <div class="telemetry-icon-box telemetry-icon-next">
+            <i class="fa-solid fa-arrow-right-to-city"></i>
+          </div>
+          <div class="telemetry-info">
+            <div class="telemetry-label">Next Station</div>
+            <div class="telemetry-val" id="hud-next-station">--</div>
+            <div class="telemetry-sub" id="hud-next-eta">ETA: --</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Train Overview & Live Journey Progress Banner -->
+    <div class="train-overview-banner" id="train-overview-banner">
+      <div class="overview-header-row">
+        <div>
+          <div class="overview-title-cluster">
+            <span class="train-badge-num" id="overview-train-num">--</span>
+            <h2 id="overview-train-name" class="overview-train-name">Loading train...</h2>
+            <span class="train-type-pill" id="overview-train-type">Superfast</span>
+          </div>
+          <div class="overview-route-summary" id="overview-route-summary">
+            -- ➔ --
+          </div>
+          <div class="overview-coach-row" id="overview-coach-row">
+            <i class="fa-solid fa-train-subway overview-coach-icon"></i>
+            <span id="overview-coach-text"></span>
+          </div>
+        </div>
+
+        <div class="overview-telemetry-col">
+          <div class="overview-telemetry-tag">Current Telemetry</div>
+          <div class="overview-location-text" id="overview-location-text">In Transit</div>
+          <div class="overview-last-update" id="overview-last-update">Last updated: --</div>
+        </div>
+      </div>
+
+      <!-- Horizontal Visual Journey Progress Bar -->
+      <div class="journey-track-progress-box">
+        <div class="journey-track-labels">
+          <div class="track-endpoint start">
+            <i class="fa-solid fa-circle-dot icon-source-dot"></i>
+            <span id="track-source-name">Source</span>
+            <div class="endpoint-time" id="track-source-time">--:--</div>
+          </div>
+
+          <div class="track-center-badge">
+            <span id="timeline-progress-text">0% Completed</span>
+            <span class="track-sep">•</span>
+            <span id="timeline-dist-text">-- km covered</span>
+          </div>
+
+          <div class="track-endpoint end">
+            <i class="fa-solid fa-location-dot icon-dest-dot"></i>
+            <span id="track-dest-name">Destination</span>
+            <div class="endpoint-time" id="track-dest-time">--:--</div>
+          </div>
+        </div>
+
+        <div class="journey-bar-track">
+          <div class="journey-bar-fill" id="timeline-progress-bar">
+            <div class="moving-train-pin" title="Current Train Location">
+              <i class="fa-solid fa-train"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Station-by-Station Live Status Table & Timeline -->
+    <div class="live-status-card">
+      <div class="live-status-card-header">
+        <div class="live-status-header-row">
+          <div>
+            <h3 class="live-status-heading">
+              <i class="fa-solid fa-list-check live-status-heading-icon"></i>
+              Station-by-Station Halt Timeline & Platform Indicators
+            </h3>
+            <div class="live-status-subheading">
+              Complete schedule, actual departure/arrival timings, platform numbers, and live delay at every halt.
+            </div>
+          </div>
+          <span id="timeline-halt-count" class="badge badge-cnf timeline-halt-count-badge">
+            -- Stations
+          </span>
+        </div>
+      </div>
+
+      <!-- Station Table Container -->
+      <div class="status-table-responsive">
+        <table class="live-station-table">
+          <thead>
+            <tr>
+              <th class="th-index">#</th>
+              <th>Station Name & Code</th>
+              <th class="th-platform">Platform</th>
+              <th class="th-sched">Scheduled Time</th>
+              <th class="th-actual">Actual / Estimated</th>
+              <th class="th-delay">Delay</th>
+              <th class="th-dist">Distance</th>
+              <th class="th-status">Status</th>
+            </tr>
+          </thead>
+          <tbody id="live-station-tbody">
+            <tr>
+              <td colspan="8" class="table-status-loading">
+                <i class="fa-solid fa-spinner fa-spin table-spinner-icon"></i>
+                Fetching live station schedule & telemetry...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer footer-margin-top">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <div class="brand-logo footer-logo-wrap">
+          <div class="brand-icon">
+            <i class="fa-solid fa-train icon-svg-white"></i>
+          </div>
+          <div class="brand-name footer-brand-title">Rail<span>ora</span></div>
+        </div>
+        <p class="footer-desc-text">
+          Railora provides live railway running status, intelligent seat vacancy insights, and official-grade passenger reservation services.
+        </p>
+      </div>
+
+      <div class="footer-links-group">
+        <h4>Live Features</h4>
+        <ul>
+          <li><a href="/radar.html">Live Running Status</a></li>
+          <li><a href="/pnr.html">PNR Status</a></li>
+          <li><a href="/trains.html">Seat Availability</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-group">
+        <h4>Passenger Services</h4>
+        <ul>
+          <li><a href="/">Book Train Tickets</a></li>
+          <li><a href="/my-bookings.html">My Bookings</a></li>
+          <li><a href="/login.html">Sign In / Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-group">
+        <h4>Safety & Trust</h4>
+        <p class="footer-sub-text">
+          An official-grade Indian Railway Passenger Reservation System with 24x7 real-time train running status.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        &copy; 2026 Railora - Indian Railway Reservation System. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- App Scripts (No Leaflet needed!) -->
+  <script src="/js/api.js"></script>
+  <script src="/js/radar.js"></script>
+</body>
+
+</html>

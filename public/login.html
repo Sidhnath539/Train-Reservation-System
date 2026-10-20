@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login & Registration - Railora</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span></div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/radar.html"><i class="fa-solid fa-tower-broadcast nav-radar-icon"></i>Live Running Status</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="/" class="btn btn-outline btn-sm btn-outline-white">
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="auth-card-container">
+      <!-- Tabs -->
+      <div class="auth-nav-tabs">
+        <div class="auth-tab active" id="tab-login">Sign In</div>
+        <div class="auth-tab" id="tab-register">Create Account</div>
+        <div class="auth-tab auth-tab-hidden" id="tab-forgot">Reset Password</div>
+      </div>
+
+      <div class="auth-body">
+        <!-- Login Form -->
+        <form id="login-form">
+          <div class="form-group auth-form-group-16">
+            <label class="form-label" for="login-email">Email Address</label>
+            <input type="email" id="login-email" class="form-control auth-input-indent"
+              placeholder="Enter email here..." required>
+          </div>
+
+          <div class="form-group auth-form-group-24">
+            <div class="auth-password-header">
+              <label class="form-label auth-password-label" for="login-password">Password</label>
+              <a href="#" id="link-forgot-pass" class="auth-forgot-link">Forgot Password?</a>
+            </div>
+            <input type="password" id="login-password" class="form-control auth-input-indent"
+              placeholder="Enter password here..." required>
+          </div>
+
+          <button type="submit" class="btn btn-search auth-btn-submit">
+            Sign In to Railora
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" class="auth-form-hidden">
+          <div class="form-group auth-form-group-14">
+            <label class="form-label" for="reg-name">Full Name</label>
+            <input type="text" id="reg-name" class="form-control auth-input-indent" placeholder="Enter your name..."
+              required>
+          </div>
+
+          <div class="form-group auth-form-group-14">
+            <label class="form-label" for="reg-email">Email Address</label>
+            <input type="email" id="reg-email" class="form-control auth-input-indent" placeholder="Enter your email..."
+              required>
+          </div>
+
+          <div class="form-group auth-form-group-14">
+            <label class="form-label" for="reg-phone">Mobile Phone</label>
+            <input type="tel" id="reg-phone" class="form-control auth-input-indent"
+              placeholder="Enter your mobile no...">
+          </div>
+
+          <div class="form-group auth-form-group-14">
+            <label class="form-label" for="reg-password">Password</label>
+            <input type="password" id="reg-password" class="form-control auth-input-indent"
+              placeholder="At least 6 characters" minlength="6" required>
+          </div>
+
+          <div class="form-group auth-form-group-24">
+            <label class="form-label" for="reg-confirm-password">Confirm Password</label>
+            <input type="password" id="reg-confirm-password" class="form-control auth-input-indent"
+              placeholder="Repeat password" minlength="6" required>
+          </div>
+
+          <button type="submit" class="btn btn-search auth-btn-submit">
+            Create Account
+          </button>
+        </form>
+
+        <!-- Forgot / Reset Password Form -->
+        <form id="forgot-form" class="auth-form-hidden">
+          <div class="auth-reset-header">
+            <h3 class="auth-reset-title">Reset Account Password</h3>
+            <p class="auth-reset-desc">Enter your registered email and mobile number to verify and update your password.
+            </p>
+          </div>
+
+          <div class="form-group auth-form-group-14">
+            <label class="form-label" for="reset-email">Registered Email Address</label>
+            <input type="email" id="reset-email" class="form-control auth-input-indent"
+              placeholder="Enter your email..." required>
+          </div>
+
+          <div class="form-group auth-form-group-14">
+            <label class="form-label" for="reset-phone">Registered Mobile Phone</label>
+            <input type="tel" id="reset-phone" class="form-control auth-input-indent"
+              placeholder="Enter your mobile no..." required>
+          </div>
+
+          <div class="form-group auth-form-group-14">
+            <label class="form-label" for="reset-password">New Password</label>
+            <input type="password" id="reset-password" class="form-control auth-input-indent"
+              placeholder="At least 6 characters" minlength="6" required>
+          </div>
+
+          <div class="form-group auth-form-group-24">
+            <label class="form-label" for="reset-confirm-password">Confirm New Password</label>
+            <input type="password" id="reset-confirm-password" class="form-control auth-input-indent"
+              placeholder="Repeat new password" minlength="6" required>
+          </div>
+
+          <button type="submit" class="btn btn-search auth-btn-reset">
+            Reset Password
+          </button>
+
+          <div class="text-center">
+            <button type="button" id="btn-back-to-login" class="btn btn-outline btn-sm btn-back-to-login">
+              <i class="fa-solid fa-arrow-left icon-svg-muted auth-back-icon"></i> Back to
+              Sign In
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Secure Passenger Authentication &amp; Privacy</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+
+</html>
