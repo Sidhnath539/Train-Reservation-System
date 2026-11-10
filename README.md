@@ -86,6 +86,18 @@ Railway Reservation System/
 
 ---
 
+## ☁️ Deployment Ready
+
+The project is pre-configured and production-ready for instant cloud and container deployment:
+- 🐳 **Docker Compose (Full Stack)**: Run `docker compose up -d` to launch the Node.js application and a health-checked MySQL 8.0 instance pre-seeded with all routes, stations, and trains.
+- 🚂 **Railway**: 1-click cloud deployment with native MySQL integration (`railway.json`).
+- 🌐 **Render**: Infrastructure-as-code deployment via Blueprint (`render.yaml`).
+- ⚡ **Vercel & Cloud VPS**: Pre-configured `vercel.json` and multi-stage Alpine Linux `Dockerfile`.
+
+👉 Read the complete guide in [**DEPLOYMENT.md**](DEPLOYMENT.md).
+
+---
+
 ## 🚀 Getting Started
 
 ### 1. Prerequisites

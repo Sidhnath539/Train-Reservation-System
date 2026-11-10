@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-const { initDb } = require('./db');
+const { initDb, checkDbHealth } = require('./db');
 const authRoutes = require('./routes/authRoutes');
 const trainRoutes = require('./routes/trainRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
@@ -26,11 +26,15 @@ app.use('/api/trains', trainRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
+// Health check endpoint for cloud monitoring & PaaS checks (Railway / Render / Docker)
+app.get('/api/health', async (req, res) => {
+  const dbHealth = await checkDbHealth();
   res.json({
     status: 'ONLINE',
     system: 'Indian Railway Reservation System',
+    environment: process.env.NODE_ENV || 'development',
+    database: dbHealth.status,
+    uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString()
   });
 });
@@ -52,10 +56,10 @@ app.use((err, req, res, next) => {
 
 // Start the server
 async function startServer() {
-  // Test and initialize MySQL connection
+  // Test and initialize MySQL connection & auto-seed
   await initDb();
 
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log('\n======================================================');
     console.log('  RAILORA - INDIAN RAILWAY RESERVATION SYSTEM         ');
     console.log('======================================================');
@@ -73,6 +77,28 @@ async function startServer() {
     console.log(' • User:  rahul@gmail.com / password123');
     console.log('======================================================\n');
   });
+
+  // Graceful shutdown handling for container termination (Docker, Kubernetes, Railway, Render)
+  const shutdown = () => {
+    console.log('\nReceived kill signal, shutting down gracefully...');
+    server.close(() => {
+      console.log('Closed remaining connections. Exiting process.');
+      process.exit(0);
+    });
+    setTimeout(() => {
+      console.error('Could not close connections in time, forcefully shutting down.');
+      process.exit(1);
+    }, 10000);
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+
+  return server;
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = app;
