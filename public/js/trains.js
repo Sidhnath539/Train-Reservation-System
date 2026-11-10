@@ -103,14 +103,75 @@ async function loadTrains(from, to, date, quota) {
 
     if (!data.success || !data.trains || data.trains.length === 0) {
       if (headerSummary) headerSummary.innerText = `${from} ➔ ${to}`;
-      if (headerMeta) headerMeta.innerText = `Date: ${formatDate(date)} | 0 Trains Found`;
+      if (headerMeta) headerMeta.innerText = `Date: ${formatDate(date)} | 0 Direct Trains`;
+
+      let connectingHtml = '';
+      if (data.connecting_suggestions && data.connecting_suggestions.length > 0) {
+        connectingHtml = `
+          <div class="connecting-routes-wrapper">
+            <h4 class="connecting-title"><i class="fa-solid fa-route icon-svg-orange"></i> Recommended 1-Stop Connecting Routes via Major Hubs:</h4>
+            <div class="connecting-cards-grid">
+              ${data.connecting_suggestions.map(cs => `
+                <div class="connecting-hub-card">
+                  <div class="connecting-hub-header">
+                    <span class="connecting-hub-badge">Transfer Station</span>
+                    <strong>${cs.hub_name}</strong>
+                  </div>
+                  <div class="connecting-legs-flow">
+                    <div class="connecting-leg">
+                      <div class="leg-info">
+                        <span class="leg-num">Leg 1:</span>
+                        <strong>${from} ➔ ${cs.hub_code}</strong>
+                        <span class="leg-sample">${cs.leg1_count} trains (${cs.leg1_sample})</span>
+                      </div>
+                      <a href="/trains.html?from=${cs.leg1_from}&to=${cs.leg1_to}&date=${date}" class="btn btn-secondary btn-xs">View Leg 1 Trains</a>
+                    </div>
+                    <div class="connecting-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="connecting-leg">
+                      <div class="leg-info">
+                        <span class="leg-num">Leg 2:</span>
+                        <strong>${cs.hub_code} ➔ ${to}</strong>
+                        <span class="leg-sample">${cs.leg2_count} trains (${cs.leg2_sample})</span>
+                      </div>
+                      <a href="/trains.html?from=${cs.leg2_from}&to=${cs.leg2_to}&date=${date}" class="btn btn-primary btn-xs">View Leg 2 Trains</a>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (data.departure_alternatives && data.departure_alternatives.length > 0) {
+        connectingHtml = `
+          <div class="connecting-routes-wrapper">
+            <h4 class="connecting-title"><i class="fa-solid fa-train-subway icon-svg-orange"></i> Scheduled Services Departing from ${from}:</h4>
+            <div class="connecting-cards-grid">
+              ${data.departure_alternatives.map(da => `
+                <div class="connecting-hub-card">
+                  <div class="connecting-hub-header">
+                    <span class="connecting-hub-badge">${da.train_number}</span>
+                    <strong>${da.train_name}</strong>
+                  </div>
+                  <div style="font-size: 0.85rem; margin-bottom: 10px; color: #475569;">
+                    <span>Departs at <strong>${formatTime(da.dep_time)}</strong> towards <strong>${da.destination}</strong></span>
+                  </div>
+                  <a href="${da.url}" class="btn btn-secondary btn-xs">View Route & Book</a>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
 
       container.innerHTML = `
         <div class="train-no-results-box">
-          <i class="fa-solid fa-triangle-exclamation icon-svg-orange train-no-results-icon"></i>
-          <h3 class="train-no-results-title">No direct trains available on this route</h3>
-          <p class="train-no-results-desc">Try searching between major terminals like New Delhi (NDLS), Mumbai Central (BCT), Howrah (HWH), or Varanasi (BSB).</p>
-          <a href="/" class="btn btn-primary btn-sm">Try Another Route</a>
+          <i class="fa-solid fa-train-tunnel icon-svg-orange train-no-results-icon"></i>
+          <h3 class="train-no-results-title">No direct trains found between these stations</h3>
+          <p class="train-no-results-desc">There are no direct running services scheduled on this exact pairing for ${formatDate(date)}.</p>
+          ${connectingHtml}
+          <div class="no-results-actions">
+            <a href="/" class="btn btn-outline btn-sm">Search Another Station</a>
+          </div>
         </div>
       `;
       return;
@@ -136,7 +197,7 @@ async function loadTrains(from, to, date, quota) {
       `;
     }
 
-    renderTrainList(allLoadedTrains, date, quota);
+    renderTrainList(allLoadedTrains, date, quota, data.connecting_suggestions);
   } catch (err) {
     container.innerHTML = `
       <div class="train-error-box">
@@ -148,7 +209,7 @@ async function loadTrains(from, to, date, quota) {
   }
 }
 
-function renderTrainList(trains, date, quota) {
+function renderTrainList(trains, date, quota, connectingSuggestions = []) {
   const container = document.getElementById('trains-list');
   if (trains.length === 0) {
     container.innerHTML = `
@@ -160,7 +221,7 @@ function renderTrainList(trains, date, quota) {
     return;
   }
 
-  container.innerHTML = trains.map(train => {
+  let html = trains.map(train => {
     return `
       <div class="train-card" id="train-card-${train.id}">
         <!-- Train Header -->
@@ -169,18 +230,10 @@ function renderTrainList(trains, date, quota) {
             <span class="train-badge-num">${train.train_number}</span>
             <h3 class="train-title-name">${train.train_name}</h3>
             <span class="train-type-pill">${train.train_type}</span>
+            ${train.is_special_service ? '<span class="train-type-pill" style="background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd;"><i class="fa-solid fa-bolt"></i> Direct Special Service</span>' : ''}
           </div>
           <div class="train-days train-days-cluster">
             <span>Runs On: <strong>${train.runs_on}</strong></span>
-            ${train.live_status ? `
-              <span class="station-status-pill ${train.live_delay_minutes > 0 ? 'pill-current' : 'pill-passed'} station-status-pill-compact" title="Live Location: ${train.live_current_station || 'In Transit'}">
-                <span class="radar-pulse-dot radar-pulse-dot-sm"></span>
-                ${train.live_status}
-              </span>
-            ` : ''}
-            <a href="/radar.html?train=${train.train_number}" class="btn btn-outline btn-sm train-btn-radar">
-              <i class="fa-solid fa-tower-broadcast icon-secondary"></i> Running Status
-            </a>
           </div>
         </div>
 
@@ -236,6 +289,45 @@ function renderTrainList(trains, date, quota) {
       </div>
     `;
   }).join('');
+
+  if (connectingSuggestions && connectingSuggestions.length > 0) {
+    html += `
+      <div class="connecting-routes-wrapper" style="margin-top: 24px;">
+        <h4 class="connecting-title"><i class="fa-solid fa-route icon-svg-orange"></i> Alternative 1-Stop Connecting Routes via Transfer Hubs:</h4>
+        <div class="connecting-cards-grid">
+          ${connectingSuggestions.map(cs => `
+            <div class="connecting-hub-card">
+              <div class="connecting-hub-header">
+                <span class="connecting-hub-badge">Transfer Hub</span>
+                <strong>${cs.hub_name}</strong>
+              </div>
+              <div class="connecting-legs-flow">
+                <div class="connecting-leg">
+                  <div class="leg-info">
+                    <span class="leg-num">Leg 1:</span>
+                    <strong>${cs.leg1_from} ➔ ${cs.hub_code}</strong>
+                    <span class="leg-sample">${cs.leg1_count} trains (${cs.leg1_sample})</span>
+                  </div>
+                  <a href="/trains.html?from=${cs.leg1_from}&to=${cs.leg1_to}&date=${date}" class="btn btn-secondary btn-xs">View Leg 1 Trains</a>
+                </div>
+                <div class="connecting-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                <div class="connecting-leg">
+                  <div class="leg-info">
+                    <span class="leg-num">Leg 2:</span>
+                    <strong>${cs.hub_code} ➔ ${cs.leg2_to}</strong>
+                    <span class="leg-sample">${cs.leg2_count} trains (${cs.leg2_sample})</span>
+                  </div>
+                  <a href="/trains.html?from=${cs.leg2_from}&to=${cs.leg2_to}&date=${date}" class="btn btn-primary btn-xs">View Leg 2 Trains</a>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
 }
 
 function startBooking(trainId, classCode, date, quota) {

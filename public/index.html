@@ -38,8 +38,8 @@
 
       <ul class="nav-links" id="nav-links">
         <li><a href="/" class="active">Search Trains</a></li>
+        <li><a href="/schedule.html"><i class="fa-solid fa-calendar-days icon-svg-orange"></i> Train Schedule</a></li>
         <li><a href="/pnr.html">PNR Status</a></li>
-        <li><a href="/radar.html"><i class="fa-solid fa-tower-broadcast nav-radar-icon"></i>Live Running Status</a></li>
         <li><a href="/my-bookings.html">My Bookings</a></li>
       </ul>
 
@@ -55,13 +55,13 @@
       <div class="irctc-card-wrapper">
         <!-- Top Navy Tabs -->
         <div class="irctc-top-tabs">
+          <a href="/schedule.html" class="irctc-tab">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>TRAIN SCHEDULE</span>
+          </a>
           <a href="/pnr.html" class="irctc-tab">
             <i class="fa-solid fa-clipboard-check"></i>
             <span>PNR STATUS</span>
-          </a>
-          <a href="/radar.html" class="irctc-tab">
-            <i class="fa-solid fa-tower-broadcast"></i>
-            <span>RUNNING STATUS</span>
           </a>
           <a href="/trains.html" class="irctc-tab">
             <i class="fa-solid fa-chart-simple"></i>
@@ -81,22 +81,27 @@
                   <span class="irctc-icon">
                     <i class="fa-solid fa-location-arrow icon-svg-primary"></i>
                   </span>
-                  <input type="text" id="from-station" class="irctc-input" list="stations-datalist" placeholder="From"
-                    value="New Delhi (NDLS)" required autocomplete="off">
+                  <input type="text" id="from-station" class="irctc-input" list="stations-datalist" placeholder="From Station (e.g. NDLS)"
+                    value="" required autocomplete="off">
                 </div>
               </div>
 
-              <button type="button" class="irctc-swap" id="btn-swap" title="Swap Stations">
-                <i class="fa-solid fa-right-left icon-svg-primary"></i>
-              </button>
+              <div class="irctc-station-actions">
+                <button type="button" class="irctc-swap" id="btn-swap" title="Swap Stations">
+                  <i class="fa-solid fa-right-left icon-svg-primary"></i>
+                </button>
+                <button type="button" class="irctc-clear-btn" id="btn-clear-stations" title="Clear Stations">
+                  <i class="fa-solid fa-xmark icon-svg-primary"></i>
+                </button>
+              </div>
 
               <div class="irctc-field irctc-to-field">
                 <div class="irctc-input-wrap">
                   <span class="irctc-icon">
                     <i class="fa-solid fa-location-dot icon-svg-primary"></i>
                   </span>
-                  <input type="text" id="to-station" class="irctc-input" list="stations-datalist" placeholder="To"
-                    value="Howrah Junction (HWH)" required autocomplete="off">
+                  <input type="text" id="to-station" class="irctc-input" list="stations-datalist" placeholder="To Station (e.g. AGC)"
+                    value="" required autocomplete="off">
                 </div>
               </div>
             </div>
@@ -174,6 +179,56 @@
               <button type="submit" class="irctc-btn-search">Search Trains</button>
             </div>
           </form>
+        </div>
+      </div>
+
+      <!-- Right Column: Hero Visual Showcase & Live Telemetry -->
+      <div class="irctc-hero-showcase">
+        <div class="hero-showcase-badge">
+          <span class="hero-live-dot"></span>
+          <span>Official Indian Railway Reservation Portal</span>
+        </div>
+        <h2 class="hero-showcase-title">
+          Travel Across India at the <span class="highlight-saffron">Speed of Tomorrow</span>
+        </h2>
+        <p class="hero-showcase-subtitle">
+          Next-generation passenger reservation system with live PRS seat availability, atomic concurrency locks, and automated instant refunds.
+        </p>
+
+        <!-- Metric Cards Grid -->
+        <div class="hero-stats-grid">
+          <div class="hero-stat-card">
+            <div class="hero-stat-num">283+</div>
+            <div class="hero-stat-label">Connected Stations</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="hero-stat-num">128</div>
+            <div class="hero-stat-label">Superfast Express Services</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="hero-stat-num">100%</div>
+            <div class="hero-stat-label">ACID Seat Safety</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="hero-stat-num">Instant</div>
+            <div class="hero-stat-label">Automated Refunds</div>
+          </div>
+        </div>
+
+        <!-- Trust Features Checklist -->
+        <div class="hero-showcase-features">
+          <div class="hero-feature-item">
+            <i class="fa-solid fa-bolt icon-svg-orange"></i>
+            <span>Live PRS seat availability with coach & berth allocation</span>
+          </div>
+          <div class="hero-feature-item">
+            <i class="fa-solid fa-shield-halved icon-svg-orange"></i>
+            <span>Zero double-booking guarantee via MySQL atomic transactions</span>
+          </div>
+          <div class="hero-feature-item">
+            <i class="fa-solid fa-file-invoice icon-svg-orange"></i>
+            <span>Printable IRCTC Electronic Reservation Slip (ERS) with QR verification</span>
+          </div>
         </div>
       </div>
     </div>
@@ -324,7 +379,7 @@
             <li><a href="/">Book Train Ticket</a></li>
             <li><a href="/pnr.html">PNR Status Inquiry</a></li>
             <li><a href="/my-bookings.html">My Bookings</a></li>
-            <li><a href="/trains.html">Train Schedules</a></li>
+            <li><a href="/schedule.html">Train Timetable & Schedules</a></li>
           </ul>
         </div>
         <div class="footer-col">

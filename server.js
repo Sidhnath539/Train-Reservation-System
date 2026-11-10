@@ -8,7 +8,6 @@ const authRoutes = require('./routes/authRoutes');
 const trainRoutes = require('./routes/trainRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-const radarRoutes = require('./routes/radarRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,7 +25,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/trains', trainRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/radar', radarRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -65,8 +63,8 @@ async function startServer() {
     console.log('\n Quick Access:');
     console.log(` • Home / Search Trains: http://localhost:${PORT}`);
     console.log(` • Train Availability:   http://localhost:${PORT}/trains.html`);
+    console.log(` • Train Schedule:       http://localhost:${PORT}/schedule.html`);
     console.log(` • PNR Status Inquiry:   http://localhost:${PORT}/pnr.html`);
-    console.log(` • Live Running Status:  http://localhost:${PORT}/radar.html`);
     console.log(` • My Bookings:          http://localhost:${PORT}/my-bookings.html`);
     console.log(` • Admin Dashboard:      http://localhost:${PORT}/admin.html`);
     console.log(` • Login / Register:     http://localhost:${PORT}/login.html`);

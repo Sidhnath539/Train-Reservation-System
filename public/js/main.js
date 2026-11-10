@@ -23,16 +23,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     dateInput.min = new Date().toISOString().split('T')[0];
   }
 
-  // Setup enhanced Station Autocomplete with station code & name display
+  // Setup enhanced Station Autocomplete with station code & name display (Empty by default)
   if (fromInput) {
-    fromInput.value = 'New Delhi (NDLS)';
-    fromInput.dataset.selectedCode = 'NDLS';
+    fromInput.value = '';
+    delete fromInput.dataset.selectedCode;
     setupStationAutocomplete(fromInput, stationsList);
   }
 
   if (toInput) {
-    toInput.value = 'Howrah Junction (HWH)';
-    toInput.dataset.selectedCode = 'HWH';
+    toInput.value = '';
+    delete toInput.dataset.selectedCode;
     setupStationAutocomplete(toInput, stationsList);
   }
 
@@ -55,6 +55,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         delete toInput.dataset.selectedCode;
       }
+    });
+  }
+
+  // Clear Stations Button (Empty source and destination on demand)
+  const clearStationsBtn = document.getElementById('btn-clear-stations');
+  if (clearStationsBtn && fromInput && toInput) {
+    clearStationsBtn.addEventListener('click', () => {
+      fromInput.value = '';
+      toInput.value = '';
+      delete fromInput.dataset.selectedCode;
+      delete toInput.dataset.selectedCode;
+      fromInput.focus();
     });
   }
 

@@ -325,10 +325,6 @@ function renderTicket(booking) {
           <i class="fa-solid fa-print"></i>
           Print / Save as PDF
         </button>
-        <a href="/radar.html?train=${booking.train_number}" class="btn btn-secondary ers-btn-radar">
-          <i class="fa-solid fa-tower-broadcast"></i>
-          Live Running Status
-        </a>
       </div>
       <div class="ers-action-right">
         ${!isCancelled ? `

@@ -130,10 +130,6 @@ function renderBookings(filter) {
           </div>
 
           <div class="bookings-actions-row">
-            <a href="/radar.html?train=${b.train_number}" class="btn btn-secondary btn-sm btn-booking-radar">
-              <i class="fa-solid fa-tower-broadcast"></i>
-              Live Running Status
-            </a>
             <a href="/pnr.html?pnr=${b.pnr_number}" class="btn btn-outline btn-sm">
               <i class="fa-solid fa-ticket"></i>
               View E-Ticket
