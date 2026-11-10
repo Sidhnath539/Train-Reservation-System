@@ -1,18 +1,33 @@
+/**
+ * ============================================================================
+ * RAILORA - USER AUTHENTICATION & PROFILE ROUTES
+ * File: routes/authRoutes.js
+ * Description: Manages User Registration, Login, Profile, and Password Reset.
+ * Level: Beginner-Friendly / Educational
+ * ============================================================================
+ * 
+ * How Authentication Works:
+ * 1. Register: User signs up -> Password is encrypted using bcrypt -> Saved to DB.
+ * 2. Login: User sends email & password -> Password is verified -> JWT token is issued.
+ * 3. Protected Requests: Frontend sends JWT in header: "Authorization: Bearer <token>".
+ */
+
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { pool } = require('../db');
+const bcrypt = require('bcryptjs');                  // Secure password hashing library
+const jwt = require('jsonwebtoken');                 // JSON Web Token library
+const { pool } = require('../db');                   // MySQL connection pool
 const { JWT_SECRET, requireAuth } = require('../middleware/auth');
 
-/**
- * Register a new user
- * POST /api/auth/register
- */
+// ----------------------------------------------------------------------------
+// ROUTE 1: REGISTER A NEW ACCOUNT
+// POST /api/auth/register
+// ----------------------------------------------------------------------------
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
 
+    // Step 1: Validate incoming inputs
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -27,7 +42,7 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Check if email already exists
+    // Step 2: Check if this email is already registered in the database
     const [existingUsers] = await pool.query(
       'SELECT id FROM users WHERE email = ? LIMIT 1',
       [email.toLowerCase().trim()]
@@ -40,17 +55,18 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Hash password
+    // Step 3: Hash the password (never store plain text passwords in databases!)
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insert user
+    // Step 4: Insert the new user into the database
     const [result] = await pool.query(
       'INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
       [name.trim(), email.toLowerCase().trim(), hashedPassword, phone || null, 'user']
     );
 
-    const user = {
+    // Step 5: Prepare user payload for JWT token
+    const newUser = {
       id: result.insertId,
       name: name.trim(),
       email: email.toLowerCase().trim(),
@@ -58,17 +74,19 @@ router.post('/register', async (req, res) => {
       role: 'user'
     };
 
-    // Generate JWT
-    const token = jwt.sign(user, JWT_SECRET, { expiresIn: '7d' });
+    // Step 6: Create a signed JWT token valid for 7 days
+    const token = jwt.sign(newUser, JWT_SECRET, { expiresIn: '7d' });
+
+    console.log(` New user registered: ${newUser.name} (${newUser.email})`);
 
     res.status(201).json({
       success: true,
       message: 'Account registered successfully.',
       token,
-      user
+      user: newUser
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Registration error:', error.message);
     res.status(500).json({
       success: false,
       message: 'Internal server error during registration.'
@@ -76,14 +94,15 @@ router.post('/register', async (req, res) => {
   }
 });
 
-/**
- * Login user
- * POST /api/auth/login
- */
+// ----------------------------------------------------------------------------
+// ROUTE 2: USER LOGIN
+// POST /api/auth/login
+// ----------------------------------------------------------------------------
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Step 1: Validate input
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -91,7 +110,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Find user by email
+    // Step 2: Look up user in database by email
     const [users] = await pool.query(
       'SELECT id, name, email, password, phone, role FROM users WHERE email = ? LIMIT 1',
       [email.toLowerCase().trim()]
@@ -106,15 +125,16 @@ router.post('/login', async (req, res) => {
 
     const user = users[0];
 
-    // Verify password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    // Step 3: Compare entered password with hashed password in database
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password.'
       });
     }
 
+    // Step 4: Generate JWT token
     const userPayload = {
       id: user.id,
       name: user.name,
@@ -125,6 +145,8 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign(userPayload, JWT_SECRET, { expiresIn: '7d' });
 
+    console.log(` User logged in: ${user.name} (${user.role})`);
+
     res.json({
       success: true,
       message: 'Logged in successfully.',
@@ -132,7 +154,7 @@ router.post('/login', async (req, res) => {
       user: userPayload
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Login error:', error.message);
     res.status(500).json({
       success: false,
       message: 'Internal server error during login.'
@@ -140,10 +162,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-/**
- * Get current authenticated user
- * GET /api/auth/me
- */
+// ----------------------------------------------------------------------------
+// ROUTE 3: GET LOGGED-IN USER PROFILE
+// GET /api/auth/me
+// ----------------------------------------------------------------------------
 router.get('/me', requireAuth, async (req, res) => {
   try {
     const [users] = await pool.query(
@@ -154,7 +176,7 @@ router.get('/me', requireAuth, async (req, res) => {
     if (users.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'User not found.'
+        message: 'User account not found.'
       });
     }
 
@@ -163,22 +185,23 @@ router.get('/me', requireAuth, async (req, res) => {
       user: users[0]
     });
   } catch (error) {
-    console.error('Fetch user error:', error);
+    console.error('Error fetching user profile:', error.message);
     res.status(500).json({
       success: false,
-      message: 'Internal server error fetching user profile.'
+      message: 'Failed to retrieve user profile.'
     });
   }
 });
 
-/**
- * Reset / Forgot Password
- * POST /api/auth/reset-password
- */
+// ----------------------------------------------------------------------------
+// ROUTE 4: RESET / FORGOT PASSWORD
+// POST /api/auth/reset-password
+// ----------------------------------------------------------------------------
 router.post('/reset-password', async (req, res) => {
   try {
     const { email, phone, new_password } = req.body;
 
+    // Step 1: Validate input
     if (!email || !new_password) {
       return res.status(400).json({
         success: false,
@@ -193,7 +216,7 @@ router.post('/reset-password', async (req, res) => {
       });
     }
 
-    // Find user by email
+    // Step 2: Find user by email
     const [users] = await pool.query(
       'SELECT id, name, email, phone FROM users WHERE email = ? LIMIT 1',
       [email.toLowerCase().trim()]
@@ -208,36 +231,36 @@ router.post('/reset-password', async (req, res) => {
 
     const user = users[0];
 
-    // If user has a phone registered, verify phone number for identity check
+    // Step 3: Verify registered phone number for identity confirmation
     if (user.phone && phone) {
       const cleanInputPhone = phone.replace(/[^0-9]/g, '');
       const cleanUserPhone = user.phone.replace(/[^0-9]/g, '');
-      
-      // Match full phone or last 10 digits
+
       if (!cleanUserPhone.endsWith(cleanInputPhone) && !cleanInputPhone.endsWith(cleanUserPhone)) {
         return res.status(400).json({
           success: false,
-          message: 'The mobile phone number does not match our records for this account.'
+          message: 'The mobile number does not match our records for this account.'
         });
       }
     }
 
-    // Hash the new password
+    // Step 4: Hash the new password and update in database
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(new_password, saltRounds);
 
-    // Update user password in database
     await pool.query(
       'UPDATE users SET password = ? WHERE id = ?',
       [hashedPassword, user.id]
     );
 
+    console.log(` Password reset for user: ${user.email}`);
+
     res.json({
       success: true,
-      message: 'Password has been reset successfully! You can now log in with your new password.'
+      message: 'Password reset successfully! You can now log in with your new password.'
     });
   } catch (error) {
-    console.error('Password reset error:', error);
+    console.error('Password reset error:', error.message);
     res.status(500).json({
       success: false,
       message: 'Internal server error while resetting password.'

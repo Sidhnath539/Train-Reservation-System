@@ -1,17 +1,32 @@
+/**
+ * ============================================================================
+ * RAILORA - ADMINISTRATIVE OPERATIONS ROUTES
+ * File: routes/adminRoutes.js
+ * Description: Manages admin metrics, train CRUD (Create, Read, Update, Delete),
+ *              and the passenger reservation manifest.
+ * Level: Beginner-Friendly / Educational
+ * ============================================================================
+ * 
+ * Access Control:
+ * All routes in this file are protected by `requireAdmin`. Only users with the
+ * role 'admin' (e.g. admin@railway.gov.in) are permitted to access these endpoints.
+ */
+
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 
-// Protect all admin routes with requireAdmin
+// Protect all admin endpoints with admin role check
 router.use(requireAdmin);
 
-/**
- * Get Admin Dashboard Metrics & KPI Stats
- * GET /api/admin/stats
- */
+// ----------------------------------------------------------------------------
+// ROUTE 1: GET DASHBOARD KPIS & STATISTICS
+// GET /api/admin/stats
+// ----------------------------------------------------------------------------
 router.get('/stats', async (req, res) => {
   try {
+    // Run simple COUNT queries to calculate key system statistics
     const [[trainCount]] = await pool.query('SELECT COUNT(*) AS total FROM trains');
     const [[userCount]] = await pool.query("SELECT COUNT(*) AS total FROM users WHERE role = 'user'");
     const [[stationCount]] = await pool.query('SELECT COUNT(*) AS total FROM stations');
@@ -20,7 +35,7 @@ router.get('/stats', async (req, res) => {
     const [[cancelledCount]] = await pool.query("SELECT COUNT(*) AS total FROM bookings WHERE booking_status = 'CANCELLED'");
     const [[revenueResult]] = await pool.query("SELECT COALESCE(SUM(total_fare), 0) AS total FROM bookings WHERE booking_status = 'CONFIRMED'");
 
-    // Recent 5 bookings
+    // Fetch the 5 most recent bookings to display on the dashboard table
     const [recentBookings] = await pool.query(
       `SELECT b.id, b.pnr_number, b.booking_status, b.total_fare, b.journey_date, b.booking_date,
               t.train_number, t.train_name, u.name AS user_name
@@ -44,7 +59,7 @@ router.get('/stats', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Admin stats error:', error);
+    console.error('Error fetching admin stats:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to retrieve administrative statistics.'
@@ -52,10 +67,10 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-/**
- * Get All Trains with Station Names and Classes
- * GET /api/admin/trains
- */
+// ----------------------------------------------------------------------------
+// ROUTE 2: GET ALL TRAINS (For Admin Management)
+// GET /api/admin/trains
+// ----------------------------------------------------------------------------
 router.get('/trains', async (req, res) => {
   try {
     const [trains] = await pool.query(
@@ -89,18 +104,18 @@ router.get('/trains', async (req, res) => {
       trains: trainsWithClasses
     });
   } catch (error) {
-    console.error('Admin fetch trains error:', error);
+    console.error('Error fetching admin trains:', error.message);
     res.status(500).json({
       success: false,
-      message: 'Failed to retrieve trains.'
+      message: 'Failed to retrieve trains list.'
     });
   }
 });
 
-/**
- * Add New Train
- * POST /api/admin/trains
- */
+// ----------------------------------------------------------------------------
+// ROUTE 3: ADD A NEW TRAIN
+// POST /api/admin/trains
+// ----------------------------------------------------------------------------
 router.post('/trains', async (req, res) => {
   const connection = await pool.getConnection();
   try {
@@ -117,6 +132,7 @@ router.post('/trains', async (req, res) => {
       classes
     } = req.body;
 
+    // 1. Validate fields
     if (!train_number || !train_name || !source_station_id || !destination_station_id || !departure_time || !arrival_time) {
       return res.status(400).json({
         success: false,
@@ -133,7 +149,7 @@ router.post('/trains', async (req, res) => {
 
     await connection.beginTransaction();
 
-    // Check duplicate train number
+    // 2. Check for duplicate train number
     const [existing] = await connection.query(
       'SELECT id FROM trains WHERE train_number = ? LIMIT 1',
       [train_number.trim()]
@@ -147,7 +163,7 @@ router.post('/trains', async (req, res) => {
       });
     }
 
-    // Insert train
+    // 3. Insert train record
     const [trainResult] = await connection.query(
       `INSERT INTO trains 
        (train_number, train_name, source_station_id, destination_station_id, departure_time, arrival_time, duration, runs_on, train_type, status) 
@@ -167,7 +183,7 @@ router.post('/trains', async (req, res) => {
 
     const newTrainId = trainResult.insertId;
 
-    // Insert classes if provided
+    // 4. Insert classes (e.g. 3A, SL)
     if (Array.isArray(classes) && classes.length > 0) {
       for (const cls of classes) {
         if (cls.class_code && cls.base_fare) {
@@ -203,7 +219,7 @@ router.post('/trains', async (req, res) => {
     });
   } catch (error) {
     await connection.rollback();
-    console.error('Add train error:', error);
+    console.error('Error adding train:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to add train: ' + error.message
@@ -213,60 +229,10 @@ router.post('/trains', async (req, res) => {
   }
 });
 
-/**
- * Update Train details / status
- * PUT /api/admin/trains/:id
- */
-router.put('/trains/:id', async (req, res) => {
-  try {
-    const trainId = parseInt(req.params.id, 10);
-    const {
-      train_name,
-      departure_time,
-      arrival_time,
-      duration,
-      runs_on,
-      train_type,
-      status
-    } = req.body;
-
-    const [result] = await pool.query(
-      `UPDATE trains 
-       SET train_name = COALESCE(?, train_name),
-           departure_time = COALESCE(?, departure_time),
-           arrival_time = COALESCE(?, arrival_time),
-           duration = COALESCE(?, duration),
-           runs_on = COALESCE(?, runs_on),
-           train_type = COALESCE(?, train_type),
-           status = COALESCE(?, status)
-       WHERE id = ?`,
-      [train_name, departure_time, arrival_time, duration, runs_on, train_type, status, trainId]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'Train not found.'
-      });
-    }
-
-    res.json({
-      success: true,
-      message: 'Train details updated successfully.'
-    });
-  } catch (error) {
-    console.error('Update train error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update train.'
-    });
-  }
-});
-
-/**
- * Delete a Train
- * DELETE /api/admin/trains/:id
- */
+// ----------------------------------------------------------------------------
+// ROUTE 4: DELETE A TRAIN
+// DELETE /api/admin/trains/:id
+// ----------------------------------------------------------------------------
 router.delete('/trains/:id', async (req, res) => {
   try {
     const trainId = parseInt(req.params.id, 10);
@@ -285,7 +251,7 @@ router.delete('/trains/:id', async (req, res) => {
       message: 'Train deleted successfully.'
     });
   } catch (error) {
-    console.error('Delete train error:', error);
+    console.error('Error deleting train:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to delete train.'
@@ -293,10 +259,10 @@ router.delete('/trains/:id', async (req, res) => {
   }
 });
 
-/**
- * Get All Bookings for System Administration
- * GET /api/admin/bookings
- */
+// ----------------------------------------------------------------------------
+// ROUTE 5: GET ALL BOOKINGS (With Search & Status Filter)
+// GET /api/admin/bookings?status=CONFIRMED&search=8429104821
+// ----------------------------------------------------------------------------
 router.get('/bookings', async (req, res) => {
   try {
     const { status, search } = req.query;
@@ -330,11 +296,13 @@ router.get('/bookings', async (req, res) => {
 
     const params = [];
 
+    // Filter by booking status (e.g. CONFIRMED or CANCELLED)
     if (status && status !== 'ALL') {
       query += ' AND b.booking_status = ?';
       params.push(status);
     }
 
+    // Search by PNR, Train Number, User Name, or Email
     if (search) {
       query += ' AND (b.pnr_number LIKE ? OR t.train_number LIKE ? OR u.name LIKE ? OR u.email LIKE ?)';
       const s = `%${search.trim()}%`;
@@ -351,7 +319,7 @@ router.get('/bookings', async (req, res) => {
       bookings
     });
   } catch (error) {
-    console.error('Admin fetch bookings error:', error);
+    console.error('Error fetching admin bookings:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to retrieve bookings list.'

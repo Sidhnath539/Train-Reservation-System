@@ -1,23 +1,41 @@
+/**
+ * ============================================================================
+ * RAILORA - TICKET BOOKING & PNR ROUTES
+ * File: routes/bookingRoutes.js
+ * Description: Manages ticket reservations, atomic seat allocation, PNR lookup,
+ *              and ticket cancellations.
+ * Level: Beginner-Friendly / Educational
+ * ============================================================================
+ * 
+ * What is a Database Transaction?
+ * When booking a ticket, multiple operations must happen together:
+ * 1. Check if seats are available.
+ * 2. Deduct seats from the database.
+ * 3. Save the booking and passenger records.
+ * If anything fails midway, a Transaction automatically "Rolls back" to undo changes,
+ * preventing double-booking or seat corruption!
+ */
+
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../db');
 const { requireAuth, optionalAuth } = require('../middleware/auth');
 
-/**
- * Helper: Generate unique 10-digit Indian Railway PNR Number
- */
+// ----------------------------------------------------------------------------
+// HELPER 1: Generate a random 10-digit Indian Railway PNR Number
+// ----------------------------------------------------------------------------
 async function generateUniquePNR(connection) {
   let isUnique = false;
   let pnr = '';
 
   while (!isUnique) {
-    // Standard Indian Railway PNR is 10 digits
-    // Format: 3-digit zone prefix (e.g. 284, 842, 651, 472) + 7 random digits
+    // Standard Indian Railway PNR: 3-digit zone prefix + 7 random digits
     const prefixes = ['284', '842', '651', '472', '239', '891', '340'];
     const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
     const suffix = Math.floor(1000000 + Math.random() * 9000000).toString();
     pnr = prefix + suffix;
 
+    // Check if this PNR already exists in database
     const [existing] = await connection.query(
       'SELECT id FROM bookings WHERE pnr_number = ? LIMIT 1',
       [pnr]
@@ -29,10 +47,11 @@ async function generateUniquePNR(connection) {
   return pnr;
 }
 
-/**
- * Helper: Generate realistic Coach & Berth Allocation
- */
+// ----------------------------------------------------------------------------
+// HELPER 2: Realistic Coach and Berth Allocation (e.g., B1-24 (LB))
+// ----------------------------------------------------------------------------
 function allocateSeat(classCode, seatIndex, preference) {
+  // Determine coach prefix based on travel class
   let coachPrefix = 'S1';
   if (classCode === '1A') coachPrefix = 'H1';
   else if (classCode === '2A') coachPrefix = 'A1';
@@ -43,17 +62,16 @@ function allocateSeat(classCode, seatIndex, preference) {
 
   const seatNum = (seatIndex % 72) + 1;
 
-  // Determine berth type
+  // Determine berth type (Lower, Middle, Upper, Side Lower, Side Upper)
   let berth = preference || 'Lower';
   if (['No Preference', ''].includes(berth)) {
     const mod = seatNum % 8;
-    if (mod === 1 || mod === 4) berth = 'LB'; // Lower Berth
-    else if (mod === 2 || mod === 5) berth = 'MB'; // Middle Berth
-    else if (mod === 3 || mod === 6) berth = 'UB'; // Upper Berth
-    else if (mod === 7) berth = 'SL'; // Side Lower
-    else berth = 'SU'; // Side Upper
+    if (mod === 1 || mod === 4) berth = 'LB';       // Lower Berth
+    else if (mod === 2 || mod === 5) berth = 'MB';  // Middle Berth
+    else if (mod === 3 || mod === 6) berth = 'UB';  // Upper Berth
+    else if (mod === 7) berth = 'SL';               // Side Lower
+    else berth = 'SU';                              // Side Upper
   } else {
-    // Map preference to acronym
     const map = {
       'Lower': 'LB',
       'Middle': 'MB',
@@ -68,31 +86,32 @@ function allocateSeat(classCode, seatIndex, preference) {
   return `${coachPrefix}-${seatNum} (${berth})`;
 }
 
-/**
- * Book train tickets with safe MySQL transactions and atomic seat locks
- * POST /api/bookings/book
- */
+// ----------------------------------------------------------------------------
+// ROUTE 1: BOOK TRAIN TICKET (With Atomic Database Transaction)
+// POST /api/bookings/book
+// ----------------------------------------------------------------------------
 router.post('/book', requireAuth, async (req, res) => {
+  // Get a single dedicated connection from the pool for this transaction
   const connection = await pool.getConnection();
 
   try {
     const { train_id, class_code, journey_date, quota, passengers } = req.body;
 
+    // STEP 1: VALIDATE REQUEST DATA
     if (!train_id || !class_code || !journey_date || !Array.isArray(passengers) || passengers.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required booking information or passenger details.'
+        message: 'Please provide train ID, class code, date, and passenger details.'
       });
     }
 
     if (passengers.length > 6) {
       return res.status(400).json({
         success: false,
-        message: 'A maximum of 6 passengers can be booked on a single ticket.'
+        message: 'Maximum 6 passengers allowed per booking.'
       });
     }
 
-    // Validate passenger fields
     for (const p of passengers) {
       if (!p.name || !p.age || !p.gender) {
         return res.status(400).json({
@@ -102,10 +121,10 @@ router.post('/book', requireAuth, async (req, res) => {
       }
     }
 
-    // Start Transaction
+    // STEP 2: START DATABASE TRANSACTION
     await connection.beginTransaction();
 
-    // 1. Fetch and Lock the Train Class info
+    // 1. Fetch train and class information (with FOR UPDATE row lock)
     const [classRows] = await connection.query(
       `SELECT tc.*, t.train_name, t.train_number 
        FROM train_classes tc 
@@ -118,7 +137,7 @@ router.post('/book', requireAuth, async (req, res) => {
       await connection.rollback();
       return res.status(404).json({
         success: false,
-        message: 'Selected train or travel class was not found.'
+        message: 'The selected train or class was not found.'
       });
     }
 
@@ -127,7 +146,7 @@ router.post('/book', requireAuth, async (req, res) => {
     const baseFare = parseFloat(trainClass.base_fare);
     const passengerCount = passengers.length;
 
-    // 2. Fetch or Initialize Seat Schedule row FOR UPDATE to prevent race conditions
+    // 2. Fetch or initialize seat counts for this date
     let [scheduleRows] = await connection.query(
       `SELECT id, available_seats, waiting_seats 
        FROM train_schedule_seats 
@@ -141,7 +160,7 @@ router.post('/book', requireAuth, async (req, res) => {
     let waitingSeats;
 
     if (scheduleRows.length === 0) {
-      // First booking for this train/date/class combination -> insert new schedule row
+      // First booking on this date -> create seat availability record
       const [insertSchedule] = await connection.query(
         `INSERT INTO train_schedule_seats (train_id, class_code, journey_date, available_seats, waiting_seats) 
          VALUES (?, ?, ?, ?, 0)`,
@@ -156,12 +175,12 @@ router.post('/book', requireAuth, async (req, res) => {
       waitingSeats = scheduleRows[0].waiting_seats;
     }
 
-    // 3. Determine Booking Status and Seat Allocations
+    // 3. Allocate Seats: Check if seats are Available (CNF) or Waitlisted (WL)
     let bookingStatus = 'CONFIRMED';
     const allocatedPassengers = [];
 
     if (availableSeats >= passengerCount) {
-      // All passengers confirmed
+      // Enough seats are available -> CONFIRMED (CNF)
       const newAvailable = availableSeats - passengerCount;
       await connection.query(
         'UPDATE train_schedule_seats SET available_seats = ? WHERE id = ?',
@@ -181,7 +200,7 @@ router.post('/book', requireAuth, async (req, res) => {
       });
       bookingStatus = 'CONFIRMED';
     } else {
-      // Waitlisted booking
+      // Seats are full -> WAITLISTED (WL)
       const newWaiting = waitingSeats + passengerCount;
       await connection.query(
         'UPDATE train_schedule_seats SET waiting_seats = ? WHERE id = ?',
@@ -202,17 +221,17 @@ router.post('/book', requireAuth, async (req, res) => {
       bookingStatus = 'WAITLISTED';
     }
 
-    // 4. Calculate Total Fare (Base Fare * count + GST 5% for AC + IRCTC service charge 15)
+    // 4. Calculate total price (Base Fare + GST 5% on AC + 15 Service Charge)
     const subtotal = baseFare * passengerCount;
     const isAC = ['1A', '2A', '3A', 'CC', 'EC'].includes(class_code);
     const gst = isAC ? subtotal * 0.05 : 0;
     const serviceFee = 15.00;
     const totalFare = parseFloat((subtotal + gst + serviceFee).toFixed(2));
 
-    // 5. Generate Unique PNR
+    // 5. Generate a unique 10-digit PNR
     const pnrNumber = await generateUniquePNR(connection);
 
-    // 6. Insert Booking Record
+    // 6. Insert record into `bookings` table
     const [bookingResult] = await connection.query(
       `INSERT INTO bookings 
        (pnr_number, user_id, train_id, class_code, journey_date, total_passengers, total_fare, quota, booking_status, payment_status) 
@@ -232,7 +251,7 @@ router.post('/book', requireAuth, async (req, res) => {
 
     const bookingId = bookingResult.insertId;
 
-    // 7. Insert Passenger Records
+    // 7. Insert each passenger into `passengers` table
     for (const p of allocatedPassengers) {
       await connection.query(
         `INSERT INTO passengers 
@@ -242,8 +261,10 @@ router.post('/book', requireAuth, async (req, res) => {
       );
     }
 
-    // Commit Transaction
+    // STEP 3: COMMIT TRANSACTION (Save all changes permanently)
     await connection.commit();
+
+    console.log(` Ticket booked successfully! PNR: ${pnrNumber}, Status: ${bookingStatus}`);
 
     res.status(201).json({
       success: true,
@@ -263,21 +284,23 @@ router.post('/book', requireAuth, async (req, res) => {
       }
     });
   } catch (error) {
+    // If anything fails, rollback all changes
     await connection.rollback();
-    console.error('Ticket booking error:', error);
+    console.error('Booking Error:', error.message);
     res.status(500).json({
       success: false,
-      message: 'Failed to process ticket booking: ' + error.message
+      message: 'Failed to process booking. ' + error.message
     });
   } finally {
+    // Always return the connection back to the pool
     connection.release();
   }
 });
 
-/**
- * PNR Status Inquiry
- * GET /api/bookings/pnr/:pnr
- */
+// ----------------------------------------------------------------------------
+// ROUTE 2: PNR STATUS INQUIRY & E-TICKET DETAILS
+// GET /api/bookings/pnr/:pnr
+// ----------------------------------------------------------------------------
 router.get('/pnr/:pnr', optionalAuth, async (req, res) => {
   try {
     const pnrParam = req.params.pnr.trim();
@@ -285,10 +308,11 @@ router.get('/pnr/:pnr', optionalAuth, async (req, res) => {
     if (!pnrParam || pnrParam.length < 8) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide a valid 10-digit PNR number.'
+        message: 'Please enter a valid 10-digit PNR number.'
       });
     }
 
+    // Join bookings with trains, stations, and user details
     const [bookings] = await pool.query(
       `SELECT 
         b.id,
@@ -329,161 +353,43 @@ router.get('/pnr/:pnr', optionalAuth, async (req, res) => {
     if (bookings.length === 0) {
       return res.status(404).json({
         success: false,
-        message: `No booking found for PNR: ${pnrParam}. Please check the number and try again.`
+        message: `No booking found for PNR "${pnrParam}". Please verify your number.`
       });
     }
 
     const booking = bookings[0];
 
-    // Fetch passenger list
+    // Fetch passenger details for this ticket
     const [passengers] = await pool.query(
       `SELECT id, name, age, gender, berth_preference, allocated_seat, status 
        FROM passengers 
-       WHERE booking_id = ? 
-       ORDER BY id ASC`,
+       WHERE booking_id = ? ORDER BY id ASC`,
       [booking.id]
     );
 
-    // Check if the current user owns this booking (for showing cancellation rights)
     const isOwner = req.user && (req.user.id === booking.user_id || req.user.role === 'admin');
 
     res.json({
       success: true,
       booking: {
         ...booking,
-        is_owner: isOwner,
+        is_owner: !!isOwner,
         passengers
       }
     });
   } catch (error) {
-    console.error('PNR inquiry error:', error);
+    console.error('PNR lookup error:', error.message);
     res.status(500).json({
       success: false,
-      message: 'Failed to retrieve PNR details.'
+      message: 'Failed to look up PNR status.'
     });
   }
 });
 
-/**
- * Cancel Ticket and Restore Seat Availability safely
- * POST /api/bookings/cancel
- */
-router.post('/cancel', requireAuth, async (req, res) => {
-  const connection = await pool.getConnection();
-
-  try {
-    const { pnr_number, booking_id } = req.body;
-
-    if (!pnr_number && !booking_id) {
-      return res.status(400).json({
-        success: false,
-        message: 'PNR number or Booking ID is required to cancel a ticket.'
-      });
-    }
-
-    await connection.beginTransaction();
-
-    // Query booking with row lock
-    let bookingQuery = 'SELECT * FROM bookings WHERE ';
-    const queryParam = pnr_number ? pnr_number.trim() : booking_id;
-    bookingQuery += pnr_number ? 'pnr_number = ?' : 'id = ?';
-    bookingQuery += ' FOR UPDATE';
-
-    const [bookings] = await connection.query(bookingQuery, [queryParam]);
-
-    if (bookings.length === 0) {
-      await connection.rollback();
-      return res.status(404).json({
-        success: false,
-        message: 'Booking not found.'
-      });
-    }
-
-    const booking = bookings[0];
-
-    // Verify ownership (unless Admin)
-    if (booking.user_id !== req.user.id && req.user.role !== 'admin') {
-      await connection.rollback();
-      return res.status(403).json({
-        success: false,
-        message: 'You are not authorized to cancel this booking.'
-      });
-    }
-
-    // Verify not already cancelled
-    if (booking.booking_status === 'CANCELLED') {
-      await connection.rollback();
-      return res.status(400).json({
-        success: false,
-        message: 'This ticket has already been cancelled.'
-      });
-    }
-
-    // 1. Update Booking status to CANCELLED and payment to REFUNDED
-    await connection.query(
-      `UPDATE bookings 
-       SET booking_status = 'CANCELLED', payment_status = 'REFUNDED' 
-       WHERE id = ?`,
-      [booking.id]
-    );
-
-    // 2. Update all passengers to status 'CAN'
-    await connection.query(
-      `UPDATE passengers SET status = 'CAN' WHERE booking_id = ?`,
-      [booking.id]
-    );
-
-    // 3. If booking was CONFIRMED, restore available seats safely
-    if (booking.booking_status === 'CONFIRMED') {
-      await connection.query(
-        `UPDATE train_schedule_seats 
-         SET available_seats = available_seats + ? 
-         WHERE train_id = ? AND class_code = ? AND journey_date = ?`,
-        [booking.total_passengers, booking.train_id, booking.class_code, booking.journey_date]
-      );
-    } else if (booking.booking_status === 'WAITLISTED') {
-      await connection.query(
-        `UPDATE train_schedule_seats 
-         SET waiting_seats = GREATEST(0, waiting_seats - ?) 
-         WHERE train_id = ? AND class_code = ? AND journey_date = ?`,
-        [booking.total_passengers, booking.train_id, booking.class_code, booking.journey_date]
-      );
-    }
-
-    // 4. Calculate realistic refund amount (deducting nominal IRCTC cancellation charge)
-    const cancellationChargePerPassenger = ['1A', '2A', 'EC'].includes(booking.class_code) ? 180 : 60;
-    const totalCharges = cancellationChargePerPassenger * booking.total_passengers;
-    const refundAmount = Math.max(0, parseFloat((booking.total_fare - totalCharges).toFixed(2)));
-
-    await connection.commit();
-
-    res.json({
-      success: true,
-      message: 'Ticket cancelled successfully. Refund has been initiated to original payment mode.',
-      refund: {
-        pnr_number: booking.pnr_number,
-        original_fare: booking.total_fare,
-        cancellation_charge: totalCharges,
-        refund_amount: refundAmount,
-        status: 'REFUNDED'
-      }
-    });
-  } catch (error) {
-    await connection.rollback();
-    console.error('Cancellation error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to cancel ticket: ' + error.message
-    });
-  } finally {
-    connection.release();
-  }
-});
-
-/**
- * Get all bookings for the currently authenticated user
- * GET /api/bookings/my-bookings
- */
+// ----------------------------------------------------------------------------
+// ROUTE 3: GET MY BOOKINGS (For logged-in passenger profile)
+// GET /api/bookings/my-bookings
+// ----------------------------------------------------------------------------
 router.get('/my-bookings', requireAuth, async (req, res) => {
   try {
     const [bookings] = await pool.query(
@@ -495,21 +401,16 @@ router.get('/my-bookings', requireAuth, async (req, res) => {
         b.booking_date,
         b.total_passengers,
         b.total_fare,
-        b.quota,
         b.booking_status,
-        b.payment_status,
         t.train_number,
         t.train_name,
         t.train_type,
         t.departure_time,
         t.arrival_time,
-        t.duration,
-        s1.code AS source_code,
-        s1.name AS source_name,
         s1.city AS source_city,
-        s2.code AS dest_code,
-        s2.name AS dest_name,
-        s2.city AS dest_city
+        s1.code AS source_code,
+        s2.city AS dest_city,
+        s2.code AS dest_code
        FROM bookings b
        JOIN trains t ON b.train_id = t.id
        JOIN stations s1 ON t.source_station_id = s1.id
@@ -519,31 +420,99 @@ router.get('/my-bookings', requireAuth, async (req, res) => {
       [req.user.id]
     );
 
-    // Fetch passengers for each booking
-    const bookingsWithPassengers = await Promise.all(
-      bookings.map(async (booking) => {
-        const [passengers] = await pool.query(
-          'SELECT id, name, age, gender, berth_preference, allocated_seat, status FROM passengers WHERE booking_id = ?',
-          [booking.id]
-        );
-        return {
-          ...booking,
-          passengers
-        };
-      })
+    res.json({
+      success: true,
+      count: bookings.length,
+      bookings
+    });
+  } catch (error) {
+    console.error('Error fetching bookings:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve booking history.'
+    });
+  }
+});
+
+// ----------------------------------------------------------------------------
+// ROUTE 4: CANCEL TICKET & RESTORE SEAT AVAILABILITY
+// POST /api/bookings/cancel/:pnr
+// ----------------------------------------------------------------------------
+router.post('/cancel/:pnr', requireAuth, async (req, res) => {
+  const connection = await pool.getConnection();
+
+  try {
+    const pnrParam = req.params.pnr.trim();
+
+    await connection.beginTransaction();
+
+    // 1. Fetch booking record
+    const [bookings] = await connection.query(
+      'SELECT * FROM bookings WHERE pnr_number = ? FOR UPDATE',
+      [pnrParam]
     );
+
+    if (bookings.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ success: false, message: 'Booking not found.' });
+    }
+
+    const booking = bookings[0];
+
+    // Ensure only ticket owner or admin can cancel
+    if (booking.user_id !== req.user.id && req.user.role !== 'admin') {
+      await connection.rollback();
+      return res.status(403).json({ success: false, message: 'You are not authorized to cancel this booking.' });
+    }
+
+    if (booking.booking_status === 'CANCELLED') {
+      await connection.rollback();
+      return res.status(400).json({ success: false, message: 'This ticket has already been cancelled.' });
+    }
+
+    // 2. Mark booking as CANCELLED in database
+    await connection.query(
+      "UPDATE bookings SET booking_status = 'CANCELLED' WHERE id = ?",
+      [booking.id]
+    );
+
+    // Update all passenger statuses to CAN
+    await connection.query(
+      "UPDATE passengers SET status = 'CAN' WHERE booking_id = ?",
+      [booking.id]
+    );
+
+    // 3. Restore seats in schedule if it was a CONFIRMED booking
+    if (booking.booking_status === 'CONFIRMED') {
+      await connection.query(
+        `UPDATE train_schedule_seats 
+         SET available_seats = available_seats + ? 
+         WHERE train_id = ? AND class_code = ? AND journey_date = ?`,
+        [booking.total_passengers, booking.train_id, booking.class_code, booking.journey_date]
+      );
+    }
+
+    // 4. Calculate refund (deduct standard IRCTC cancellation fee of 60 per passenger)
+    const cancelCharge = booking.total_passengers * 60;
+    const refundAmount = Math.max(0, parseFloat(booking.total_fare) - cancelCharge);
+
+    await connection.commit();
 
     res.json({
       success: true,
-      count: bookingsWithPassengers.length,
-      bookings: bookingsWithPassengers
+      message: 'Ticket cancelled successfully.',
+      refund_amount: refundAmount.toFixed(2),
+      cancellation_charge: cancelCharge.toFixed(2)
     });
   } catch (error) {
-    console.error('My bookings error:', error);
+    await connection.rollback();
+    console.error('Cancellation error:', error.message);
     res.status(500).json({
       success: false,
-      message: 'Failed to retrieve your bookings.'
+      message: 'Failed to cancel ticket.'
     });
+  } finally {
+    connection.release();
   }
 });
 
