@@ -6,9 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "seed": "node -e \"require('./db').initDb().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); })\"",
-    "sync": "node database/syncCatalogToDb.js",
-    "export-schema": "node database/exportSchema.js"
+    "seed": "node -e \"require('./db').initDb().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); })\""
   },
   "engines": {
     "node": ">=18.0.0"
