@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Confirmation & Electronic Ticket - Railora</title>
+  <meta name="description" content="Confirmed Indian Railways Electronic Reservation Slip (ERS) with PNR status, coach and berth allocations.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar no-print">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar no-print">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/">Search Trains</a></li>
+        <li><a href="/schedule.html"><i class="fa-solid fa-calendar-days icon-svg-orange"></i> Train Schedule</a></li>
+        <li><a href="/live-status.html"><i class="fa-solid fa-location-dot icon-svg-orange"></i> Live Status</a></li>
+        <li><a href="/station-board.html">Station Board</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+        <li><a href="/contact.html">Help & Support</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Success Announcement Banner -->
+  <section class="container no-print" style="margin-top: 28px;">
+    <div style="background: #ecfdf5; border: 2px solid #a7f3d0; border-radius: 8px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <i class="fa-solid fa-circle-check" style="font-size: 2.2rem; color: #10b981;"></i>
+        <div>
+          <h2 style="color: #065f46; font-size: 1.3rem; font-weight: 800; margin: 0;">Reservation Confirmed!</h2>
+          <p style="color: #047857; margin: 4px 0 0; font-size: 0.9rem;">Your berths have been reserved in the Indian Railways Passenger Reservation System.</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn btn-search" onclick="window.print()">
+          <i class="fa-solid fa-print"></i> Print ERS Slip
+        </button>
+        <a href="/my-bookings.html" class="btn btn-outline" style="border-color: #059669; color: #059669;">
+          <i class="fa-solid fa-list-check"></i> My Bookings
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Electronic Reservation Slip (ERS) Card -->
+  <main class="container" style="margin-top: 24px; margin-bottom: 50px;">
+    <div class="ers-wrapper" id="ers-ticket-card" style="background: #ffffff; border: 2px solid #cbd5e1; border-radius: 8px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+      <!-- Official Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #082b53; padding-bottom: 16px; margin-bottom: 20px;">
+        <div>
+          <div style="font-size: 1.4rem; font-weight: 900; color: #082b53; letter-spacing: 0.5px;">
+            <i class="fa-solid fa-train"></i> INDIAN RAILWAYS (IRCTC / RAILORA)
+          </div>
+          <div style="font-size: 0.85rem; color: #475569; font-weight: 700;">ELECTRONIC RESERVATION SLIP (ERS) - PASSENGER RECORD</div>
+        </div>
+        <div style="text-align: right;">
+          <span class="badge badge-cnf" style="font-size: 0.9rem; padding: 6px 14px;">CONFIRMED</span>
+        </div>
+      </div>
+
+      <!-- PNR & Transaction Details Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
+        <div>
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">PNR Number</div>
+          <div id="ers-pnr" style="font-size: 1.3rem; font-weight: 900; color: #082b53; letter-spacing: 1px;">--</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Train Number & Name</div>
+          <div id="ers-train" style="font-size: 0.95rem; font-weight: 800; color: #082b53;">--</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Class & Quota</div>
+          <div id="ers-class-quota" style="font-size: 0.95rem; font-weight: 800; color: #082b53;">--</div>
+        </div>
+        <div>
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Journey Date</div>
+          <div id="ers-date" style="font-size: 0.95rem; font-weight: 800; color: #082b53;">--</div>
+        </div>
+      </div>
+
+      <!-- Route Timings Grid -->
+      <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 16px; margin-bottom: 24px;">
+        <div>
+          <div style="font-size: 0.8rem; color: #64748b; font-weight: 700;">FROM / BOARDING</div>
+          <div id="ers-from-station" style="font-size: 1.15rem; font-weight: 900; color: #082b53;">--</div>
+          <div id="ers-dep-time" style="font-size: 0.9rem; color: #fb792b; font-weight: 700;">Dep: --:--</div>
+        </div>
+        <div style="text-align: center; color: #94a3b8;">
+          <i class="fa-solid fa-arrow-right-long" style="font-size: 1.5rem; color: #fb792b;"></i>
+          <div id="ers-duration" style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-top: 4px;">--</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.8rem; color: #64748b; font-weight: 700;">TO / DESTINATION</div>
+          <div id="ers-to-station" style="font-size: 1.15rem; font-weight: 900; color: #082b53;">--</div>
+          <div id="ers-arr-time" style="font-size: 0.9rem; color: #082b53; font-weight: 700;">Arr: --:--</div>
+        </div>
+      </div>
+
+      <!-- Passenger Details Table -->
+      <div style="margin-bottom: 24px;">
+        <h3 style="color: #082b53; font-size: 1.05rem; font-weight: 800; margin-bottom: 12px;">
+          <i class="fa-solid fa-users icon-svg-orange"></i> Passenger Manifest & Berth Allocations
+        </h3>
+        <div class="table-responsive">
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Passenger Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Preference</th>
+                <th>Booking Status</th>
+                <th>Current Status / Coach & Berth</th>
+              </tr>
+            </thead>
+            <tbody id="ers-passengers-tbody">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 20px;">Loading passenger manifest...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Payment & Security QR Block -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px dashed #cbd5e1; padding-top: 18px; flex-wrap: wrap; gap: 20px;">
+        <div>
+          <div style="font-size: 0.85rem; color: #64748b;">
+            Total Ticket Fare Paid: <strong id="ers-fare" style="font-size: 1.1rem; color: #082b53;">₹0.00</strong>
+          </div>
+          <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">
+            Transaction Ref: <strong id="ers-txn-id">--</strong> | Mode: <strong id="ers-pay-method">UPI / Digital Gateway</strong>
+          </div>
+          <div style="font-size: 0.75rem; color: #16a34a; font-weight: 700; margin-top: 6px;">
+            <i class="fa-solid fa-circle-check"></i> Valid photo identity proof (Aadhaar, Voter ID, Passport) required during journey.
+          </div>
+        </div>
+        <div style="text-align: center;">
+          <div style="border: 1px solid #cbd5e1; padding: 6px; border-radius: 4px; display: inline-block; background: #ffffff;">
+            <i class="fa-solid fa-qrcode" style="font-size: 64px; color: #082b53;"></i>
+          </div>
+          <div style="font-size: 0.68rem; font-weight: 700; color: #64748b; margin-top: 2px;">TTE QR VERIFIED</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer no-print">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-brand-logo-index">
+            <div class="brand-icon footer-brand-icon-index">
+              <i class="fa-solid fa-train icon-svg-white footer-brand-fa"></i>
+            </div>
+            <div class="brand-name">Rail<span>ora</span></div>
+          </div>
+          <p>Indian Railway Passenger Reservation System powered by Node.js, Express, and MySQL. Designed for speed, high concurrency, and dependable rail travel bookings.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Passenger Services</h4>
+          <ul>
+            <li><a href="/">Book Train Ticket</a></li>
+            <li><a href="/pnr.html">PNR Status Inquiry</a></li>
+            <li><a href="/my-bookings.html">My Bookings</a></li>
+            <li><a href="/schedule.html">Train Timetable & Schedules</a></li>
+            <li><a href="/cancel.html">Ticket Cancellation & Refunds</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Security & Architecture</h4>
+          <ul>
+            <li><a href="#">ACID Database Transactions</a></li>
+            <li><a href="#">Parameterized SQL Queries</a></li>
+            <li><a href="#">Bcrypt Password Hashing</a></li>
+            <li><a href="/admin.html">Admin Operations</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>24x7 Railway Helplines</h4>
+          <p class="helpline-text">Passenger Enquiry: <strong>139</strong></p>
+          <p class="helpline-text">Security & Medical: <strong>182</strong></p>
+          <p class="helpline-text-last">Support: support@railora.gov.in</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const pnr = urlParams.get('pnr') || '8429104821';
+
+      try {
+        const res = await fetchWithAuth(`/bookings/pnr/${pnr}`);
+        if (!res.success || !res.booking) {
+          showToast('Could not load ticket details.', 'error');
+          return;
+        }
+
+        const b = res.booking;
+
+        document.getElementById('ers-pnr').textContent = b.pnr_number;
+        document.getElementById('ers-train').textContent = `${b.train_number} - ${b.train_name} (${b.train_type || 'Superfast'})`;
+        document.getElementById('ers-class-quota').textContent = `${b.class_code} | ${b.quota || 'GENERAL'}`;
+        document.getElementById('ers-date').textContent = formatDate(b.journey_date);
+
+        document.getElementById('ers-from-station').textContent = `${b.source_city} (${b.source_code})`;
+        document.getElementById('ers-dep-time').textContent = `Dep: ${formatTime(b.departure_time)}`;
+        document.getElementById('ers-to-station').textContent = `${b.dest_city} (${b.dest_code})`;
+        document.getElementById('ers-arr-time').textContent = `Arr: ${formatTime(b.arrival_time)}`;
+        document.getElementById('ers-duration').textContent = b.duration || '--';
+
+        document.getElementById('ers-fare').textContent = formatCurrency(b.total_fare);
+        document.getElementById('ers-txn-id').textContent = (b.payment && b.payment.transaction_id) ? b.payment.transaction_id : `TXN_PAID_${b.pnr_number}`;
+        document.getElementById('ers-pay-method').textContent = (b.payment && b.payment.payment_method) ? b.payment.payment_method : 'Digital Wallet / UPI';
+
+        const tbody = document.getElementById('ers-passengers-tbody');
+        tbody.innerHTML = (b.passengers || []).map((p, idx) => `
+          <tr>
+            <td><strong>${idx + 1}</strong></td>
+            <td><strong>${p.name}</strong></td>
+            <td>${p.age} yrs</td>
+            <td>${p.gender}</td>
+            <td>${p.berth_preference || 'No Preference'}</td>
+            <td><span class="badge ${p.status === 'CNF' ? 'badge-cnf' : 'badge-wl'}">CNF</span></td>
+            <td><strong style="color: #082b53; font-size: 0.95rem;">${p.allocated_seat}</strong></td>
+          </tr>
+        `).join('');
+
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+  </script>
+</body>
+
+</html>

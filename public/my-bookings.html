@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Bookings & Travel History - Railora</title>
+  <title>User Dashboard & My Bookings - Railora Indian Railways</title>
+  <meta name="description" content="View booked train journeys, download printable e-tickets, check cancellation refunds, and manage profile.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -31,56 +32,247 @@
         <div class="brand-icon">
           <i class="fa-solid fa-train icon-svg-white"></i>
         </div>
-        <div class="brand-name">Rail<span>ora</span></div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
       </a>
 
       <ul class="nav-links" id="nav-links">
         <li><a href="/">Search Trains</a></li>
         <li><a href="/schedule.html"><i class="fa-solid fa-calendar-days icon-svg-orange"></i> Train Schedule</a></li>
+        <li><a href="/live-status.html"><i class="fa-solid fa-location-dot icon-svg-orange"></i> Live Status</a></li>
+        <li><a href="/station-board.html">Station Board</a></li>
         <li><a href="/pnr.html">PNR Status</a></li>
         <li><a href="/my-bookings.html" class="active">My Bookings</a></li>
+        <li><a href="/contact.html">Help & Support</a></li>
       </ul>
 
-      <div class="nav-actions" id="nav-actions"></div>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
     </div>
   </header>
 
-  <main class="container bookings-main">
-    <div class="bookings-header">
-      <div>
-        <h2 class="bookings-title">My Bookings & e-Tickets</h2>
-        <p class="bookings-subtitle">View your past journeys, download
-          e-tickets, or manage reservation cancellations.</p>
-      </div>
+  <!-- Page Header -->
+  <section class="page-hero-header">
+    <div class="container">
+      <h1 class="hero-title"><i class="fa-solid fa-gauge-high"></i> Passenger Journey Dashboard</h1>
+      <p class="hero-subtitle">Manage all your Indian Railways reservations, printable electronic tickets, and account details in one place.</p>
+    </div>
+  </section>
 
-      <!-- Filter Tabs -->
-      <div class="booking-filter-group">
-        <button type="button" class="booking-filter-btn active btn btn-outline btn-sm" data-filter="ALL">All</button>
-        <button type="button" class="booking-filter-btn btn btn-outline btn-sm"
-          data-filter="CONFIRMED">Confirmed</button>
-        <button type="button" class="booking-filter-btn btn btn-outline btn-sm"
-          data-filter="CANCELLED">Cancelled</button>
+  <main class="container bookings-main" style="margin-bottom: 50px;">
+    <!-- Dashboard Top Nav Tabs -->
+    <div class="dashboard-nav-tabs">
+      <div class="dash-tab-link active" id="tab-btn-bookings">
+        <i class="fa-solid fa-ticket icon-svg-orange"></i> My Train Bookings
+      </div>
+      <div class="dash-tab-link" id="tab-btn-profile">
+        <i class="fa-solid fa-user-pen icon-svg-primary"></i> My Profile & Security
       </div>
     </div>
 
-    <!-- Bookings Feed -->
-    <div id="my-bookings-container">
-      <!-- Dynamic list from bookings.js -->
+    <!-- Tab 1: Bookings Content -->
+    <div id="content-bookings">
+      <div class="bookings-header">
+        <div>
+          <h2 class="bookings-title">Reservation History & e-Tickets</h2>
+          <p class="bookings-subtitle">View confirmed and past journeys, print reservation slips, or manage ticket cancellations.</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="booking-filter-group">
+          <button type="button" class="booking-filter-btn active btn btn-outline btn-sm" data-filter="ALL">All Journeys</button>
+          <button type="button" class="booking-filter-btn btn btn-outline btn-sm" data-filter="CONFIRMED">Confirmed</button>
+          <button type="button" class="booking-filter-btn btn btn-outline btn-sm" data-filter="CANCELLED">Cancelled</button>
+        </div>
+      </div>
+
+      <!-- Bookings Feed -->
+      <div id="my-bookings-container">
+        <!-- Injected dynamically by bookings.js -->
+      </div>
+    </div>
+
+    <!-- Tab 2: Profile & Security Content -->
+    <div id="content-profile" style="display: none;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+        <!-- Edit Profile Card -->
+        <div class="profile-card" style="margin: 0; max-width: 100%;">
+          <h3 style="color: #082b53; font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+            <i class="fa-solid fa-id-card icon-svg-primary"></i> Passenger Profile Details
+          </h3>
+          <form id="form-edit-profile">
+            <div class="form-group">
+              <label class="form-label" for="prof-name">Full Name</label>
+              <input type="text" id="prof-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="prof-email">Registered Email Address (Read-only)</label>
+              <input type="email" id="prof-email" class="form-control" disabled style="background: #f1f5f9;">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="prof-phone">Mobile Phone (10 Digits)</label>
+              <input type="tel" id="prof-phone" class="form-control" placeholder="e.g. 9811223344" maxlength="10">
+            </div>
+            <button type="submit" class="btn btn-secondary" style="width: 100%; margin-top: 10px;">
+              <i class="fa-solid fa-floppy-disk"></i> Save Profile Changes
+            </button>
+          </form>
+        </div>
+
+        <!-- Change Password Card -->
+        <div class="profile-card" style="margin: 0; max-width: 100%;">
+          <h3 style="color: #082b53; font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+            <i class="fa-solid fa-lock icon-svg-orange"></i> Change Password
+          </h3>
+          <form id="form-change-password">
+            <div class="form-group">
+              <label class="form-label" for="curr-password">Current Password</label>
+              <input type="password" id="curr-password" class="form-control" placeholder="Enter current password..." required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="new-password">New Password (Min 6 Characters)</label>
+              <input type="password" id="new-password" class="form-control" placeholder="Create new password..." required minlength="6">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="confirm-password">Confirm New Password</label>
+              <input type="password" id="confirm-password" class="form-control" placeholder="Re-type new password..." required minlength="6">
+            </div>
+            <button type="submit" class="btn btn-search" style="width: 100%; margin-top: 10px;">
+              <i class="fa-solid fa-shield-halved"></i> Update Password
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   </main>
 
   <!-- Footer -->
   <footer class="site-footer">
     <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-brand-logo-index">
+            <div class="brand-icon footer-brand-icon-index">
+              <i class="fa-solid fa-train icon-svg-white footer-brand-fa"></i>
+            </div>
+            <div class="brand-name">Rail<span>ora</span></div>
+          </div>
+          <p>Indian Railway Passenger Reservation System powered by Node.js, Express, and MySQL. Designed for speed, high concurrency, and dependable rail travel bookings.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Passenger Services</h4>
+          <ul>
+            <li><a href="/">Book Train Ticket</a></li>
+            <li><a href="/pnr.html">PNR Status Inquiry</a></li>
+            <li><a href="/my-bookings.html">My Bookings</a></li>
+            <li><a href="/schedule.html">Train Timetable & Schedules</a></li>
+            <li><a href="/cancel.html">Ticket Cancellation & Refunds</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Security & Architecture</h4>
+          <ul>
+            <li><a href="#">ACID Database Transactions</a></li>
+            <li><a href="#">Parameterized SQL Queries</a></li>
+            <li><a href="#">Bcrypt Password Hashing</a></li>
+            <li><a href="/admin.html">Admin Operations</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>24x7 Railway Helplines</h4>
+          <p class="helpline-text">Passenger Enquiry: <strong>139</strong></p>
+          <p class="helpline-text">Security & Medical: <strong>182</strong></p>
+          <p class="helpline-text-last">Support: support@railora.gov.in</p>
+        </div>
+      </div>
       <div class="footer-bottom">
         <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
-        <div>Official Passenger Reservation System</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
       </div>
     </div>
   </footer>
 
   <script src="/js/api.js"></script>
   <script src="/js/bookings.js"></script>
+  <script>
+    // Tab switching between Bookings and Profile
+    document.getElementById('tab-btn-bookings').addEventListener('click', () => {
+      document.getElementById('tab-btn-bookings').classList.add('active');
+      document.getElementById('tab-btn-profile').classList.remove('active');
+      document.getElementById('content-bookings').style.display = 'block';
+      document.getElementById('content-profile').style.display = 'none';
+    });
+
+    document.getElementById('tab-btn-profile').addEventListener('click', async () => {
+      document.getElementById('tab-btn-profile').classList.add('active');
+      document.getElementById('tab-btn-bookings').classList.remove('active');
+      document.getElementById('content-bookings').style.display = 'none';
+      document.getElementById('content-profile').style.display = 'block';
+
+      // Load Profile
+      try {
+        const res = await fetchWithAuth('/auth/me');
+        if (res.success && res.user) {
+          document.getElementById('prof-name').value = res.user.name || '';
+          document.getElementById('prof-email').value = res.user.email || '';
+          document.getElementById('prof-phone').value = res.user.phone || '';
+        }
+      } catch (err) {
+        showToast('Error loading profile: ' + err.message, 'error');
+      }
+    });
+
+    // Save profile changes
+    document.getElementById('form-edit-profile').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('prof-name').value.trim();
+      const phone = document.getElementById('prof-phone').value.trim();
+
+      try {
+        const res = await fetchWithAuth('/auth/profile', {
+          method: 'PUT',
+          body: JSON.stringify({ name, phone })
+        });
+        if (res.success) {
+          showToast('Profile updated successfully!', 'success');
+          setUser(res.user);
+          updateNavAuth();
+        } else {
+          showToast(res.message || 'Failed to update profile.', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+    // Change password
+    document.getElementById('form-change-password').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const current_password = document.getElementById('curr-password').value;
+      const new_password = document.getElementById('new-password').value;
+      const confirm_password = document.getElementById('confirm-password').value;
+
+      if (new_password !== confirm_password) {
+        showToast('New passwords do not match.', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetchWithAuth('/auth/change-password', {
+          method: 'POST',
+          body: JSON.stringify({ current_password, new_password })
+        });
+        if (res.success) {
+          showToast('Password changed successfully!', 'success');
+          document.getElementById('form-change-password').reset();
+        } else {
+          showToast(res.message || 'Failed to change password.', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+  </script>
 </body>
 
 </html>

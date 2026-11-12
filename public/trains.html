@@ -4,12 +4,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Train Availability & Seat Reservation - Railora</title>
+  <title>Train Availability & Seat Reservation - Railora Indian Railways</title>
+  <meta name="description" content="Search trains, check seat availability across 1A, 2A, 3A, SL, CC, and book confirmed tickets on Railora.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
 
   <!-- Navigation Bar -->
   <header class="navbar">
@@ -18,17 +32,22 @@
         <div class="brand-icon">
           <i class="fa-solid fa-train icon-svg-white"></i>
         </div>
-        <div class="brand-name">Rail<span>ora</span></div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
       </a>
 
       <ul class="nav-links" id="nav-links">
         <li><a href="/" class="active">Search Trains</a></li>
         <li><a href="/schedule.html"><i class="fa-solid fa-calendar-days icon-svg-orange"></i> Train Schedule</a></li>
+        <li><a href="/live-status.html"><i class="fa-solid fa-location-dot icon-svg-orange"></i> Live Status</a></li>
+        <li><a href="/station-board.html">Station Board</a></li>
         <li><a href="/pnr.html">PNR Status</a></li>
         <li><a href="/my-bookings.html">My Bookings</a></li>
+        <li><a href="/contact.html">Help & Support</a></li>
       </ul>
 
-      <div class="nav-actions" id="nav-actions"></div>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
     </div>
   </header>
 
@@ -95,7 +114,7 @@
     <!-- Left Filters Sidebar -->
     <aside class="filters-sidebar">
       <div class="filter-header">
-        <h3>Filters</h3>
+        <h3><i class="fa-solid fa-sliders icon-svg-primary"></i> Filters</h3>
         <button type="button" onclick="location.reload()" class="btn btn-outline btn-sm btn-filter-reset">Reset</button>
       </div>
 
@@ -114,30 +133,23 @@
       <!-- Train Type -->
       <div class="filter-group">
         <div class="filter-title">Train Type</div>
-        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Rajdhani"> Rajdhani
-          Express</label>
-        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Vande Bharat"> Vande
-          Bharat</label>
-        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Shatabdi"> Shatabdi
-          Express</label>
-        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Superfast"> Superfast
-          Express</label>
-        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Duronto"> Duronto
-          Express</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Rajdhani"> Rajdhani Express</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Vande Bharat"> Vande Bharat Express</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Shatabdi"> Shatabdi Express</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Superfast"> Superfast Express</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Duronto"> Duronto Express</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-type" value="Express"> Mail / Express</label>
       </div>
 
       <!-- Travel Class -->
       <div class="filter-group">
         <div class="filter-title">Travel Class</div>
-        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="1A"> AC First Class
-          (1A)</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="1A"> AC First Class (1A)</label>
         <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="2A"> AC 2 Tier (2A)</label>
         <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="3A"> AC 3 Tier (3A)</label>
-        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="SL"> Sleeper Class
-          (SL)</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="SL"> Sleeper Class (SL)</label>
         <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="CC"> AC Chair Car (CC)</label>
-        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="EC"> Exec. Chair Car
-          (EC)</label>
+        <label class="filter-checkbox"><input type="checkbox" class="filter-class" value="2S"> Second Sitting (2S)</label>
       </div>
     </aside>
 
@@ -150,9 +162,45 @@
   <!-- Footer -->
   <footer class="site-footer">
     <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-brand-logo-index">
+            <div class="brand-icon footer-brand-icon-index">
+              <i class="fa-solid fa-train icon-svg-white footer-brand-fa"></i>
+            </div>
+            <div class="brand-name">Rail<span>ora</span></div>
+          </div>
+          <p>Indian Railway Passenger Reservation System powered by Node.js, Express, and MySQL. Designed for speed, high concurrency, and dependable rail travel bookings.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Passenger Services</h4>
+          <ul>
+            <li><a href="/">Book Train Ticket</a></li>
+            <li><a href="/pnr.html">PNR Status Inquiry</a></li>
+            <li><a href="/my-bookings.html">My Bookings</a></li>
+            <li><a href="/schedule.html">Train Timetable & Schedules</a></li>
+            <li><a href="/cancel.html">Ticket Cancellation & Refunds</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Security & Architecture</h4>
+          <ul>
+            <li><a href="#">ACID Database Transactions</a></li>
+            <li><a href="#">Parameterized SQL Queries</a></li>
+            <li><a href="#">Bcrypt Password Hashing</a></li>
+            <li><a href="/admin.html">Admin Operations</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>24x7 Railway Helplines</h4>
+          <p class="helpline-text">Passenger Enquiry: <strong>139</strong></p>
+          <p class="helpline-text">Security & Medical: <strong>182</strong></p>
+          <p class="helpline-text-last">Support: support@railora.gov.in</p>
+        </div>
+      </div>
       <div class="footer-bottom">
         <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
-        <div>Fast &amp; Safe Indian Railway Reservations</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
       </div>
     </div>
   </footer>

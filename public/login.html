@@ -4,12 +4,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login & Registration - Railora</title>
+  <title>Login & Registration - Railora Indian Railways</title>
+  <meta name="description" content="Sign in or create an account on Railora Indian Railway Passenger Reservation System.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
 
   <!-- Navigation Bar -->
   <header class="navbar">
@@ -18,134 +32,139 @@
         <div class="brand-icon">
           <i class="fa-solid fa-train icon-svg-white"></i>
         </div>
-        <div class="brand-name">Rail<span>ora</span></div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
       </a>
 
-      <ul class="nav-links">
-        <li><a href="/">Home</a></li>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/">Search Trains</a></li>
+        <li><a href="/schedule.html"><i class="fa-solid fa-calendar-days icon-svg-orange"></i> Train Schedule</a></li>
+        <li><a href="/live-status.html"><i class="fa-solid fa-location-dot icon-svg-orange"></i> Live Status</a></li>
         <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+        <li><a href="/contact.html">Help & Support</a></li>
       </ul>
 
-      <div class="nav-actions">
-        <a href="/" class="btn btn-outline btn-sm btn-outline-white">
-          Back to Home
-        </a>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
       </div>
     </div>
   </header>
+
+  <!-- Page Header -->
+  <section class="page-hero-header">
+    <div class="container">
+      <h1 class="hero-title"><i class="fa-solid fa-user-shield"></i> Indian Railway Passenger Portal</h1>
+      <p class="hero-subtitle">Sign in to book tickets, check live PNR status, view past journeys, and manage cancellations.</p>
+    </div>
+  </section>
 
   <main class="container">
     <div class="auth-card-container">
       <!-- Tabs -->
       <div class="auth-nav-tabs">
-        <div class="auth-tab active" id="tab-login">Sign In</div>
-        <div class="auth-tab" id="tab-register">Create Account</div>
-        <div class="auth-tab auth-tab-hidden" id="tab-forgot">Reset Password</div>
+        <div class="auth-tab active" id="tab-login"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In</div>
+        <div class="auth-tab" id="tab-register"><i class="fa-solid fa-user-plus"></i> Register Account</div>
+        <div class="auth-tab auth-tab-hidden" id="tab-forgot"><i class="fa-solid fa-key"></i> Reset Password</div>
       </div>
 
       <div class="auth-body">
         <!-- Login Form -->
         <form id="login-form">
           <div class="form-group auth-form-group-16">
-            <label class="form-label" for="login-email">Email Address</label>
+            <label class="form-label" for="login-email"><i class="fa-solid fa-envelope icon-svg-primary"></i> Email Address</label>
             <input type="email" id="login-email" class="form-control auth-input-indent"
-              placeholder="Enter email here..." required>
+              placeholder="e.g. rahul@gmail.com" required>
           </div>
 
           <div class="form-group auth-form-group-24">
             <div class="auth-password-header">
-              <label class="form-label auth-password-label" for="login-password">Password</label>
+              <label class="form-label auth-password-label" for="login-password"><i class="fa-solid fa-lock icon-svg-primary"></i> Password</label>
               <a href="#" id="link-forgot-pass" class="auth-forgot-link">Forgot Password?</a>
             </div>
             <input type="password" id="login-password" class="form-control auth-input-indent"
-              placeholder="Enter password here..." required>
+              placeholder="Enter your password..." required>
           </div>
 
           <button type="submit" class="btn btn-search auth-btn-submit">
-            Sign In to Railora
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Railora
           </button>
         </form>
 
         <!-- Register Form -->
         <form id="register-form" class="auth-form-hidden">
           <div class="form-group auth-form-group-14">
-            <label class="form-label" for="reg-name">Full Name</label>
-            <input type="text" id="reg-name" class="form-control auth-input-indent" placeholder="Enter your name..."
+            <label class="form-label" for="reg-name"><i class="fa-solid fa-user icon-svg-primary"></i> Full Name</label>
+            <input type="text" id="reg-name" class="form-control auth-input-indent" placeholder="e.g. Rahul Sharma"
               required>
           </div>
 
           <div class="form-group auth-form-group-14">
-            <label class="form-label" for="reg-email">Email Address</label>
-            <input type="email" id="reg-email" class="form-control auth-input-indent" placeholder="Enter your email..."
+            <label class="form-label" for="reg-email"><i class="fa-solid fa-envelope icon-svg-primary"></i> Email Address</label>
+            <input type="email" id="reg-email" class="form-control auth-input-indent" placeholder="e.g. rahul@gmail.com"
               required>
           </div>
 
           <div class="form-group auth-form-group-14">
-            <label class="form-label" for="reg-phone">Mobile Phone</label>
-            <input type="tel" id="reg-phone" class="form-control auth-input-indent"
-              placeholder="Enter your mobile no...">
+            <label class="form-label" for="reg-phone"><i class="fa-solid fa-phone icon-svg-primary"></i> Mobile Number (10 Digits)</label>
+            <input type="tel" id="reg-phone" class="form-control auth-input-indent" placeholder="e.g. 9811223344"
+              maxlength="10">
           </div>
 
-          <div class="form-group auth-form-group-14">
-            <label class="form-label" for="reg-password">Password</label>
+          <div class="form-group auth-form-group-20">
+            <label class="form-label" for="reg-password"><i class="fa-solid fa-lock icon-svg-primary"></i> Password (Min 6 Characters)</label>
             <input type="password" id="reg-password" class="form-control auth-input-indent"
-              placeholder="At least 6 characters" minlength="6" required>
+              placeholder="Create strong password..." required minlength="6">
+          </div>
+
+          <button type="submit" class="btn btn-secondary auth-btn-submit">
+            <i class="fa-solid fa-user-plus"></i> Create Passenger Account
+          </button>
+        </form>
+
+        <!-- Forgot Password Form -->
+        <form id="forgot-form" class="auth-form-hidden">
+          <div class="form-group auth-form-group-16">
+            <label class="form-label" for="forgot-email"><i class="fa-solid fa-envelope icon-svg-primary"></i> Registered Email</label>
+            <input type="email" id="forgot-email" class="form-control auth-input-indent"
+              placeholder="Enter your registered email..." required>
+          </div>
+
+          <div class="form-group auth-form-group-16">
+            <label class="form-label" for="forgot-phone"><i class="fa-solid fa-phone icon-svg-primary"></i> Registered Mobile Number</label>
+            <input type="tel" id="forgot-phone" class="form-control auth-input-indent"
+              placeholder="Enter registered mobile number..." required>
           </div>
 
           <div class="form-group auth-form-group-24">
-            <label class="form-label" for="reg-confirm-password">Confirm Password</label>
-            <input type="password" id="reg-confirm-password" class="form-control auth-input-indent"
-              placeholder="Repeat password" minlength="6" required>
+            <label class="form-label" for="forgot-new-password"><i class="fa-solid fa-key icon-svg-primary"></i> New Password</label>
+            <input type="password" id="forgot-new-password" class="form-control auth-input-indent"
+              placeholder="Enter at least 6 characters..." required minlength="6">
           </div>
 
           <button type="submit" class="btn btn-search auth-btn-submit">
-            Create Account
+            <i class="fa-solid fa-check"></i> Reset Password Now
           </button>
+
+          <div class="auth-cancel-wrapper">
+            <a href="#" id="link-cancel-forgot" class="auth-cancel-link"><i class="fa-solid fa-arrow-left"></i> Back to Sign In</a>
+          </div>
         </form>
 
-        <!-- Forgot / Reset Password Form -->
-        <form id="forgot-form" class="auth-form-hidden">
-          <div class="auth-reset-header">
-            <h3 class="auth-reset-title">Reset Account Password</h3>
-            <p class="auth-reset-desc">Enter your registered email and mobile number to verify and update your password.
-            </p>
-          </div>
-
-          <div class="form-group auth-form-group-14">
-            <label class="form-label" for="reset-email">Registered Email Address</label>
-            <input type="email" id="reset-email" class="form-control auth-input-indent"
-              placeholder="Enter your email..." required>
-          </div>
-
-          <div class="form-group auth-form-group-14">
-            <label class="form-label" for="reset-phone">Registered Mobile Phone</label>
-            <input type="tel" id="reset-phone" class="form-control auth-input-indent"
-              placeholder="Enter your mobile no..." required>
-          </div>
-
-          <div class="form-group auth-form-group-14">
-            <label class="form-label" for="reset-password">New Password</label>
-            <input type="password" id="reset-password" class="form-control auth-input-indent"
-              placeholder="At least 6 characters" minlength="6" required>
-          </div>
-
-          <div class="form-group auth-form-group-24">
-            <label class="form-label" for="reset-confirm-password">Confirm New Password</label>
-            <input type="password" id="reset-confirm-password" class="form-control auth-input-indent"
-              placeholder="Repeat new password" minlength="6" required>
-          </div>
-
-          <button type="submit" class="btn btn-search auth-btn-reset">
-            Reset Password
-          </button>
-
-          <div class="text-center">
-            <button type="button" id="btn-back-to-login" class="btn btn-outline btn-sm btn-back-to-login">
-              <i class="fa-solid fa-arrow-left icon-svg-muted auth-back-icon"></i> Back to
-              Sign In
+        <!-- Demonstration Accounts Quick Fill -->
+        <div class="demo-logins-box">
+          <p class="demo-logins-header"><i class="fa-solid fa-flask"></i> Demonstration Test Logins:</p>
+          <div class="demo-buttons-grid">
+            <button type="button" class="btn-demo-acc" id="btn-fill-admin">
+              <i class="fa-solid fa-user-shield"></i>
+              <span><strong>Admin Account:</strong> admin@railway.gov.in / admin123</span>
+            </button>
+            <button type="button" class="btn-demo-acc" id="btn-fill-user">
+              <i class="fa-solid fa-user"></i>
+              <span><strong>Passenger Account:</strong> rahul@gmail.com / password123</span>
             </button>
           </div>
-        </form>
+        </div>
+
       </div>
     </div>
   </main>
@@ -153,13 +172,50 @@
   <!-- Footer -->
   <footer class="site-footer">
     <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-brand-logo-index">
+            <div class="brand-icon footer-brand-icon-index">
+              <i class="fa-solid fa-train icon-svg-white footer-brand-fa"></i>
+            </div>
+            <div class="brand-name">Rail<span>ora</span></div>
+          </div>
+          <p>Indian Railway Passenger Reservation System powered by Node.js, Express, and MySQL. Designed for speed, high concurrency, and dependable rail travel bookings.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Passenger Services</h4>
+          <ul>
+            <li><a href="/">Book Train Ticket</a></li>
+            <li><a href="/pnr.html">PNR Status Inquiry</a></li>
+            <li><a href="/my-bookings.html">My Bookings</a></li>
+            <li><a href="/schedule.html">Train Timetable & Schedules</a></li>
+            <li><a href="/cancel.html">Ticket Cancellation & Refunds</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Security & Architecture</h4>
+          <ul>
+            <li><a href="#">ACID Database Transactions</a></li>
+            <li><a href="#">Parameterized SQL Queries</a></li>
+            <li><a href="#">Bcrypt Password Hashing</a></li>
+            <li><a href="/admin.html">Admin Operations</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>24x7 Railway Helplines</h4>
+          <p class="helpline-text">Passenger Enquiry: <strong>139</strong></p>
+          <p class="helpline-text">Security & Medical: <strong>182</strong></p>
+          <p class="helpline-text-last">Support: support@railora.gov.in</p>
+        </div>
+      </div>
       <div class="footer-bottom">
         <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
-        <div>Secure Passenger Authentication &amp; Privacy</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
       </div>
     </div>
   </footer>
 
+  <!-- Scripts -->
   <script src="/js/api.js"></script>
   <script src="/js/auth.js"></script>
 </body>

@@ -5,6 +5,10 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS `refunds`;
+DROP TABLE IF EXISTS `cancellations`;
+DROP TABLE IF EXISTS `payments`;
+DROP TABLE IF EXISTS `contact_messages`;
 DROP TABLE IF EXISTS `passengers`;
 DROP TABLE IF EXISTS `bookings`;
 DROP TABLE IF EXISTS `reservations`;
@@ -97,6 +101,59 @@ CREATE TABLE `passengers` (
   `allocated_seat` VARCHAR(40) NOT NULL,
   `status` ENUM('CNF', 'WL', 'CAN') DEFAULT 'CNF',
   FOREIGN KEY (`booking_id`) REFERENCES `bookings`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `payments` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `booking_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `transaction_id` VARCHAR(60) NOT NULL UNIQUE,
+  `payment_method` VARCHAR(30) NOT NULL,
+  `amount` DECIMAL(10,2) NOT NULL,
+  `status` ENUM('SUCCESS', 'FAILED', 'PENDING') DEFAULT 'SUCCESS',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`booking_id`) REFERENCES `bookings`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `cancellations` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `booking_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `pnr_number` VARCHAR(10) NOT NULL,
+  `cancellation_reason` VARCHAR(255) DEFAULT 'Change of travel plans',
+  `cancellation_charge` DECIMAL(10,2) NOT NULL DEFAULT 60.00,
+  `refund_amount` DECIMAL(10,2) NOT NULL,
+  `status` ENUM('CANCELLED', 'PARTIALLY_CANCELLED') DEFAULT 'CANCELLED',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`booking_id`) REFERENCES `bookings`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `refunds` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `cancellation_id` INT NOT NULL,
+  `booking_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `refund_transaction_id` VARCHAR(60) NOT NULL UNIQUE,
+  `amount` DECIMAL(10,2) NOT NULL,
+  `status` ENUM('PROCESSED', 'PENDING', 'FAILED') DEFAULT 'PROCESSED',
+  `processed_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`cancellation_id`) REFERENCES `cancellations`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`booking_id`) REFERENCES `bookings`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `contact_messages` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
+  `phone` VARCHAR(20) DEFAULT NULL,
+  `category` VARCHAR(50) DEFAULT 'General Enquiry',
+  `subject` VARCHAR(150) NOT NULL,
+  `message` TEXT NOT NULL,
+  `status` ENUM('NEW', 'IN_PROGRESS', 'RESOLVED') DEFAULT 'NEW',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Seed Users
@@ -916,5 +973,16 @@ INSERT INTO `passengers` (`booking_id`, `name`, `age`, `gender`, `berth_preferen
 (1, 'Ananya Sharma', 26, 'Female', 'Middle', 'B2-22 (MB)', 'CNF'),
 (2, 'Rahul Sharma', 29, 'Male', 'Lower', 'A1-15 (LB)', 'CNF'),
 (3, 'Priya Patel', 28, 'Female', 'Window', 'C3-34 (WS)', 'CNF');
+
+-- Seed Simulated Payments
+INSERT INTO `payments` (`id`, `booking_id`, `user_id`, `transaction_id`, `payment_method`, `amount`, `status`) VALUES
+(1, 1, 2, 'TXN_UPI_8429104821_981', 'UPI (Google Pay)', 4040.00, 'SUCCESS'),
+(2, 2, 2, 'TXN_CARD_2940185930_412', 'Debit Card (HDFC)', 2905.00, 'SUCCESS'),
+(3, 3, 3, 'TXN_UPI_6519284710_775', 'UPI (PhonePe)', 1750.00, 'SUCCESS');
+
+-- Seed Demonstration Support Inquiries
+INSERT INTO `contact_messages` (`id`, `name`, `email`, `phone`, `category`, `subject`, `message`, `status`) VALUES
+(1, 'Rahul Sharma', 'rahul@gmail.com', '+91 9811223344', 'Booking Support', 'Coach Preference on Tejas Rajdhani', 'Can senior citizens request lower berth auto-allotment during online reservation?', 'RESOLVED'),
+(2, 'Amitabh Verma', 'amitabh.v@gmail.com', '+91 9876501234', 'Refund Enquiry', 'Clarification on Tatkal refund rules', 'Requesting details on refund deduction percentage for cancelled waitlisted tickets.', 'IN_PROGRESS');
 
 SET FOREIGN_KEY_CHECKS = 1;

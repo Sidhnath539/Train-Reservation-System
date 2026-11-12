@@ -261,10 +261,20 @@ router.post('/book', requireAuth, async (req, res) => {
       );
     }
 
+    // 8. Record Simulated Payment in `payments` table
+    const payMethod = req.body.payment_method || 'UPI (Google Pay)';
+    const txnId = req.body.transaction_id || `TXN_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`;
+
+    await connection.query(
+      `INSERT INTO payments (booking_id, user_id, transaction_id, payment_method, amount, status)
+       VALUES (?, ?, ?, ?, ?, 'SUCCESS')`,
+      [bookingId, req.user.id, txnId, payMethod, totalFare]
+    );
+
     // STEP 3: COMMIT TRANSACTION (Save all changes permanently)
     await connection.commit();
 
-    console.log(` Ticket booked successfully! PNR: ${pnrNumber}, Status: ${bookingStatus}`);
+    console.log(` Ticket booked successfully! PNR: ${pnrNumber}, Status: ${bookingStatus}, Payment: ${txnId}`);
 
     res.status(201).json({
       success: true,
@@ -280,6 +290,8 @@ router.post('/book', requireAuth, async (req, res) => {
         total_passengers: passengerCount,
         total_fare: totalFare,
         booking_status: bookingStatus,
+        transaction_id: txnId,
+        payment_method: payMethod,
         passengers: allocatedPassengers
       }
     });
@@ -367,6 +379,28 @@ router.get('/pnr/:pnr', optionalAuth, async (req, res) => {
       [booking.id]
     );
 
+    // Fetch payment details
+    const [payments] = await pool.query(
+      'SELECT transaction_id, payment_method, amount, status, created_at FROM payments WHERE booking_id = ? ORDER BY id DESC LIMIT 1',
+      [booking.id]
+    );
+
+    // Fetch cancellation & refund details if cancelled
+    let cancellationDetails = null;
+    if (booking.booking_status === 'CANCELLED') {
+      const [cancels] = await pool.query(
+        `SELECT c.pnr_number, c.cancellation_reason, c.cancellation_charge, c.refund_amount, c.created_at,
+                r.refund_transaction_id, r.status AS refund_status
+         FROM cancellations c
+         LEFT JOIN refunds r ON c.id = r.cancellation_id
+         WHERE c.booking_id = ? ORDER BY c.id DESC LIMIT 1`,
+        [booking.id]
+      );
+      if (cancels.length > 0) {
+        cancellationDetails = cancels[0];
+      }
+    }
+
     const isOwner = req.user && (req.user.id === booking.user_id || req.user.role === 'admin');
 
     res.json({
@@ -374,7 +408,9 @@ router.get('/pnr/:pnr', optionalAuth, async (req, res) => {
       booking: {
         ...booking,
         is_owner: !!isOwner,
-        passengers
+        passengers,
+        payment: payments.length > 0 ? payments[0] : null,
+        cancellation: cancellationDetails
       }
     });
   } catch (error) {
@@ -495,14 +531,43 @@ router.post('/cancel/:pnr', requireAuth, async (req, res) => {
     // 4. Calculate refund (deduct standard IRCTC cancellation fee of 60 per passenger)
     const cancelCharge = booking.total_passengers * 60;
     const refundAmount = Math.max(0, parseFloat(booking.total_fare) - cancelCharge);
+    const reason = (req.body && req.body.reason) ? req.body.reason.trim() : 'Change of travel plans';
+
+    // Record in cancellations table
+    const [cancelResult] = await connection.query(
+      `INSERT INTO cancellations 
+       (booking_id, user_id, pnr_number, cancellation_reason, cancellation_charge, refund_amount, status)
+       VALUES (?, ?, ?, ?, ?, ?, 'CANCELLED')`,
+      [booking.id, booking.user_id, pnrParam, reason, cancelCharge, refundAmount]
+    );
+
+    const cancellationId = cancelResult.insertId;
+    const refundTxnId = `REF_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // Record in refunds table
+    await connection.query(
+      `INSERT INTO refunds 
+       (cancellation_id, booking_id, user_id, refund_transaction_id, amount, status)
+       VALUES (?, ?, ?, ?, ?, 'PROCESSED')`,
+      [cancellationId, booking.id, booking.user_id, refundTxnId, refundAmount]
+    );
+
+    // Update payment_status to REFUNDED in bookings table
+    await connection.query(
+      "UPDATE bookings SET payment_status = 'REFUNDED' WHERE id = ?",
+      [booking.id]
+    );
 
     await connection.commit();
 
+    console.log(` Ticket cancelled: PNR ${pnrParam}, Refund TXN: ${refundTxnId}, Amount: ₹${refundAmount}`);
+
     res.json({
       success: true,
-      message: 'Ticket cancelled successfully.',
+      message: 'Ticket cancelled successfully. Simulated refund has been processed to your source payment method.',
       refund_amount: refundAmount.toFixed(2),
-      cancellation_charge: cancelCharge.toFixed(2)
+      cancellation_charge: cancelCharge.toFixed(2),
+      refund_transaction_id: refundTxnId
     });
   } catch (error) {
     await connection.rollback();

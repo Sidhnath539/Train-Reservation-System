@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard & Rail Operations - Railora</title>
+  <title>Admin Operations & PRS Management - Railora</title>
+  <meta name="description"
+    content="Administrative control center for Indian Railways operations: train schedules, seat inventories, passenger manifest, and simulated financial ledger.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -24,7 +26,6 @@
     </div>
   </div>
 
-
   <!-- Navigation Bar -->
   <header class="navbar navbar-admin">
     <div class="container nav-container">
@@ -32,180 +33,399 @@
         <div class="brand-icon brand-icon-admin">
           <i class="fa-solid fa-user-shield icon-svg-white"></i>
         </div>
-        <div class="brand-name">Rail<span>ora</span><span class="brand-badge brand-badge-admin">Admin Portal</span>
-        </div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge brand-badge-admin">Admin Portal</span></div>
       </a>
 
       <ul class="nav-links">
-        <li><a href="/" target="_blank">View Live Website ↗</a></li>
-        <li><a href="#trains-section">Manage Trains</a></li>
-        <li><a href="#bookings-section">All Bookings</a></li>
+        <li><a href="/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live Portal</a></li>
+        <li><a href="/schedule.html" target="_blank"><i class="fa-solid fa-calendar-days"></i> Timetable</a></li>
+        <li><a href="/live-status.html" target="_blank"><i class="fa-solid fa-satellite-dish"></i> Live Status</a></li>
       </ul>
 
-      <div class="nav-actions" id="nav-actions"></div>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
     </div>
   </header>
 
   <main class="container admin-main">
-    <!-- Welcome Header -->
+
+    <!-- Admin Welcome Header -->
     <div class="admin-header-row">
       <div>
-        <h2 class="admin-page-title">Railway System Operations Dashboard</h2>
-        <p class="admin-page-desc">Real-time metrics, train schedule catalog, and Indian Railways passenger manifest.
-        </p>
+        <h1 class="admin-page-title"><i class="fa-solid fa-gauge-high icon-svg-primary"></i> PRS Operations Center</h1>
+        <p class="admin-page-desc">System telemetry, train schedules, passenger reservation records, and simulated payment ledgers.</p>
       </div>
       <div>
         <button type="button" class="btn btn-secondary btn-open-add-train" id="btn-open-add-train">
-          <i class="fa-solid fa-plus icon-svg-white btn-icon-plus-white"></i>
-          Add New Train
+          <i class="fa-solid fa-plus icon-svg-white btn-icon-plus-white"></i> Add New Train
         </button>
       </div>
     </div>
 
-    <!-- KPI Metric Cards Grid -->
-    <div class="admin-stats-grid">
-      <!-- Total Trains -->
-      <div class="stat-kpi-card">
-        <div class="stat-icon trains">
-          <i class="fa-solid fa-train icon-svg-primary stat-kpi-icon"></i>
+    <!-- Admin Tab Navigation Strip -->
+    <div class="admin-tab-nav">
+      <button type="button" class="admin-tab-btn active" data-tab="tab-overview">
+        <i class="fa-solid fa-chart-pie"></i> Overview & KPIs
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="tab-trains">
+        <i class="fa-solid fa-train"></i> Train Management
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="tab-bookings">
+        <i class="fa-solid fa-ticket"></i> Bookings Manifest
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="tab-payments">
+        <i class="fa-solid fa-money-check-dollar"></i> Demo Payments Ledger
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="tab-refunds">
+        <i class="fa-solid fa-hand-holding-dollar"></i> Demo Refunds Ledger
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="tab-users">
+        <i class="fa-solid fa-users"></i> Registered Users
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="tab-messages">
+        <i class="fa-solid fa-comments"></i> Passenger Helpdesk
+      </button>
+    </div>
+
+    <!-- ====================================================================
+         TAB 1: OVERVIEW & KPIS
+         ==================================================================== -->
+    <div class="admin-tab-pane active" id="tab-overview">
+      <!-- 6 KPI Stat Tiles -->
+      <div class="admin-stats-grid-6">
+        <div class="stat-kpi-card">
+          <div class="stat-icon trains">
+            <i class="fa-solid fa-train icon-svg-primary stat-kpi-icon"></i>
+          </div>
+          <div>
+            <div class="stat-number" id="stat-trains">0</div>
+            <div class="stat-label">Active Trains</div>
+          </div>
         </div>
-        <div>
-          <div class="stat-number" id="stat-trains">0</div>
-          <div class="stat-label">Total Trains Active</div>
+
+        <div class="stat-kpi-card">
+          <div class="stat-icon stations-kpi">
+            <i class="fa-solid fa-building-columns stat-kpi-icon"></i>
+          </div>
+          <div>
+            <div class="stat-number" id="stat-stations">0</div>
+            <div class="stat-label">Total Stations</div>
+          </div>
+        </div>
+
+        <div class="stat-kpi-card">
+          <div class="stat-icon users-kpi">
+            <i class="fa-solid fa-users stat-kpi-icon"></i>
+          </div>
+          <div>
+            <div class="stat-number" id="stat-users">0</div>
+            <div class="stat-label">Registered Users</div>
+          </div>
+        </div>
+
+        <div class="stat-kpi-card">
+          <div class="stat-icon bookings">
+            <i class="fa-solid fa-ticket icon-svg-success stat-kpi-icon"></i>
+          </div>
+          <div>
+            <div class="stat-number" id="stat-bookings">0</div>
+            <div class="stat-label">Total Bookings</div>
+          </div>
+        </div>
+
+        <div class="stat-kpi-card">
+          <div class="stat-icon revenue">
+            <i class="fa-solid fa-circle-check icon-svg-orange stat-kpi-icon"></i>
+          </div>
+          <div>
+            <div class="stat-number" id="stat-confirmed">0</div>
+            <div class="stat-label">Confirmed Seats</div>
+          </div>
+        </div>
+
+        <div class="stat-kpi-card">
+          <div class="stat-icon users">
+            <i class="fa-solid fa-coins icon-svg-primary stat-kpi-icon"></i>
+          </div>
+          <div>
+            <div class="stat-number stat-revenue-num" id="stat-revenue">₹0.00</div>
+            <div class="stat-label">Demo Revenue (₹)</div>
+          </div>
         </div>
       </div>
 
-      <!-- Total Bookings -->
-      <div class="stat-kpi-card">
-        <div class="stat-icon bookings">
-          <i class="fa-solid fa-ticket icon-svg-success stat-kpi-icon"></i>
+      <!-- Recent Activity & System Architecture Overview -->
+      <div class="contact-layout-grid">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3 class="admin-card-heading"><i class="fa-solid fa-clock-rotate-left icon-svg-primary"></i> Recent Booking Transactions</h3>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>PNR</th>
+                  <th>Passenger</th>
+                  <th>Train</th>
+                  <th>Journey Date</th>
+                  <th>Fare</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recent-bookings-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div>
-          <div class="stat-number" id="stat-bookings">0</div>
-          <div class="stat-label">Total Reservations</div>
-        </div>
-      </div>
 
-      <!-- Confirmed Bookings -->
-      <div class="stat-kpi-card">
-        <div class="stat-icon revenue">
-          <i class="fa-solid fa-circle-check icon-svg-orange stat-kpi-icon"></i>
-        </div>
-        <div>
-          <div class="stat-number" id="stat-confirmed">0</div>
-          <div class="stat-label">Confirmed Tickets</div>
-        </div>
-      </div>
-
-      <!-- Total Revenue -->
-      <div class="stat-kpi-card">
-        <div class="stat-icon users">
-          <i class="fa-solid fa-coins icon-svg-primary stat-kpi-icon"></i>
-        </div>
-        <div>
-          <div class="stat-number stat-revenue-num" id="stat-revenue">₹0.00</div>
-          <div class="stat-label">Total Revenue (₹)</div>
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3 class="admin-card-heading"><i class="fa-solid fa-shield-halved icon-svg-orange"></i> Engine Architecture</h3>
+          </div>
+          <div style="padding: 20px;">
+            <p style="font-size: 0.88rem; color: #475569; line-height: 1.6; margin-bottom: 14px;">
+              <strong>High-Concurrency Booking Engine:</strong> Every passenger reservation uses atomic MySQL transactions with row-level locks (<code>FOR UPDATE</code>) to guarantee zero double-bookings.
+            </p>
+            <p style="font-size: 0.88rem; color: #475569; line-height: 1.6; margin-bottom: 14px;">
+              <strong>Zero-Budget Demonstration:</strong> All payment gateways and refund transfers operate in academic simulation mode.
+            </p>
+            <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; font-size: 0.82rem; color: #082b53;">
+              <i class="fa-solid fa-circle-info"></i> Admin Role Verified: Full administrative CRUD authorization active.
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Section 1: Train Management -->
-    <div class="admin-card" id="trains-section">
-      <div class="admin-card-header">
-        <h3 class="admin-card-heading">Active Train Schedules & Routes</h3>
-      </div>
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Train No.</th>
-              <th>Name & Type</th>
-              <th>Route (From ➔ To)</th>
-              <th>Timings</th>
-              <th>Classes Configured</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="admin-trains-tbody">
-            <!-- Injected dynamically -->
-          </tbody>
-        </table>
+    <!-- ====================================================================
+         TAB 2: TRAIN MANAGEMENT
+         ==================================================================== -->
+    <div class="admin-tab-pane" id="tab-trains">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-heading"><i class="fa-solid fa-train icon-svg-primary"></i> Configured Trains & Schedules</h3>
+          <div class="admin-filter-bar">
+            <input type="text" id="admin-train-search" class="form-control admin-search-input" placeholder="Search Train No, Name...">
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Train No.</th>
+                <th>Name & Type</th>
+                <th>Route (From ➔ To)</th>
+                <th>Timings</th>
+                <th>Classes Configured</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-trains-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <!-- Section 2: All Bookings Manifest -->
-    <div class="admin-card" id="bookings-section">
-      <div class="admin-card-header">
-        <h3 class="admin-card-heading">Passenger Reservation Manifest</h3>
-        <div class="admin-filter-bar">
-          <input type="text" id="admin-booking-search" class="form-control admin-search-input"
-            placeholder="Search PNR, Train, User...">
-          <select id="admin-booking-status" class="form-control admin-status-select">
-            <option value="ALL">All Statuses</option>
-            <option value="CONFIRMED">Confirmed Only</option>
-            <option value="WAITLISTED">Waitlisted Only</option>
-            <option value="CANCELLED">Cancelled Only</option>
-          </select>
+    <!-- ====================================================================
+         TAB 3: BOOKINGS MANIFEST
+         ==================================================================== -->
+    <div class="admin-tab-pane" id="tab-bookings">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-heading"><i class="fa-solid fa-ticket icon-svg-primary"></i> Passenger Reservation Manifest</h3>
+          <div class="admin-filter-bar">
+            <input type="text" id="admin-booking-search" class="form-control admin-search-input"
+              placeholder="Search PNR, Train, User...">
+            <select id="admin-booking-status" class="form-control admin-status-select">
+              <option value="ALL">All Statuses</option>
+              <option value="CONFIRMED">Confirmed Only</option>
+              <option value="WAITLISTED">Waitlisted Only</option>
+              <option value="CANCELLED">Cancelled Only</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>PNR</th>
+                <th>Booked By</th>
+                <th>Train</th>
+                <th>Route</th>
+                <th>Journey Date</th>
+                <th>Class</th>
+                <th>Fare Paid</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="admin-bookings-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
         </div>
       </div>
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>PNR</th>
-              <th>Booked By</th>
-              <th>Train</th>
-              <th>Route</th>
-              <th>Journey Date</th>
-              <th>Class</th>
-              <th>Fare Paid</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="admin-bookings-tbody">
-            <!-- Injected dynamically -->
-          </tbody>
-        </table>
+    </div>
+
+    <!-- ====================================================================
+         TAB 4: DEMO PAYMENTS LEDGER
+         ==================================================================== -->
+    <div class="admin-tab-pane" id="tab-payments">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-heading"><i class="fa-solid fa-credit-card icon-svg-primary"></i> Simulated Payments Ledger (₹0 Budget)</h3>
+          <span class="badge badge-active"><i class="fa-solid fa-check"></i> Demo Verified</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Transaction ID</th>
+                <th>PNR</th>
+                <th>User / Payer</th>
+                <th>Method</th>
+                <th>Amount (₹)</th>
+                <th>Status</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="admin-payments-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+
+    <!-- ====================================================================
+         TAB 5: DEMO REFUNDS LEDGER
+         ==================================================================== -->
+    <div class="admin-tab-pane" id="tab-refunds">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-heading"><i class="fa-solid fa-hand-holding-dollar icon-svg-orange"></i> Ticket Cancellation & Simulated Refunds</h3>
+          <span class="badge badge-active"><i class="fa-solid fa-rotate-left"></i> Seat Restored</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Refund ID</th>
+                <th>PNR</th>
+                <th>Passenger</th>
+                <th>Cancellation Fee</th>
+                <th>Refund Amount</th>
+                <th>Status</th>
+                <th>Processed At</th>
+              </tr>
+            </thead>
+            <tbody id="admin-refunds-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         TAB 6: REGISTERED USERS
+         ==================================================================== -->
+    <div class="admin-tab-pane" id="tab-users">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-heading"><i class="fa-solid fa-users icon-svg-primary"></i> Registered Users Directory</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Full Name</th>
+                <th>Email Address</th>
+                <th>Phone</th>
+                <th>Role</th>
+                <th>Total Bookings</th>
+                <th>Member Since</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         TAB 7: PASSENGER HELPDESK MESSAGES
+         ==================================================================== -->
+    <div class="admin-tab-pane" id="tab-messages">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-heading"><i class="fa-solid fa-comments icon-svg-primary"></i> Passenger Grievance & Helpdesk Inbox</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Passenger Name</th>
+                <th>Contact</th>
+                <th>Category</th>
+                <th>Subject & Query</th>
+                <th>Status</th>
+                <th>Submitted On</th>
+              </tr>
+            </thead>
+            <tbody id="admin-messages-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- Add New Train Modal -->
   <div class="modal-overlay" id="add-train-modal">
     <div class="modal-card modal-card-admin">
       <div class="modal-header">
-        <h3 class="modal-title">Add New Express Train</h3>
+        <h3 class="modal-title"><i class="fa-solid fa-train icon-svg-orange"></i> Add New Express Train</h3>
         <button type="button" class="modal-close" onclick="closeAddTrainModal()">&times;</button>
       </div>
       <form id="add-train-form">
         <div class="modal-body modal-body-train">
           <div class="form-group">
-            <label class="form-label">Train Number</label>
-            <input type="text" id="train-number" class="form-control" placeholder="e.g. 12424" required>
+            <label class="form-label">Train Number <span class="text-danger">*</span></label>
+            <input type="text" id="train-number" class="form-control" placeholder="e.g. 12424" required maxlength="10">
           </div>
           <div class="form-group">
-            <label class="form-label">Train Name</label>
+            <label class="form-label">Train Name <span class="text-danger">*</span></label>
             <input type="text" id="train-name" class="form-control" placeholder="e.g. Rajdhani Express" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Source Station</label>
+            <label class="form-label">Source Station <span class="text-danger">*</span></label>
             <select id="train-source-station" class="form-control" required></select>
           </div>
           <div class="form-group">
-            <label class="form-label">Destination Station</label>
+            <label class="form-label">Destination Station <span class="text-danger">*</span></label>
             <select id="train-dest-station" class="form-control" required></select>
           </div>
           <div class="form-group">
-            <label class="form-label">Departure Time</label>
+            <label class="form-label">Departure Time <span class="text-danger">*</span></label>
             <input type="time" id="train-dep-time" class="form-control" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Arrival Time</label>
+            <label class="form-label">Arrival Time <span class="text-danger">*</span></label>
             <input type="time" id="train-arr-time" class="form-control" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Total Duration</label>
+            <label class="form-label">Total Duration <span class="text-danger">*</span></label>
             <input type="text" id="train-duration" class="form-control" placeholder="e.g. 14h 30m" required>
           </div>
           <div class="form-group">
@@ -216,12 +436,12 @@
               <option value="Shatabdi">Shatabdi Express</option>
               <option value="Superfast">Superfast Express</option>
               <option value="Duronto">Duronto Express</option>
+              <option value="Mail/Express">Mail / Express</option>
             </select>
           </div>
           <div class="form-group form-group-span2">
             <label class="form-label">Runs On Days</label>
-            <input type="text" id="train-runs-on" class="form-control" value="Mon, Tue, Wed, Thu, Fri, Sat, Sun"
-              required>
+            <input type="text" id="train-runs-on" class="form-control" value="Mon, Tue, Wed, Thu, Fri, Sat, Sun" required>
           </div>
 
           <div class="train-fares-block">
@@ -229,22 +449,22 @@
             <div class="train-fares-grid">
               <div class="form-group">
                 <label class="form-label">3A (AC 3 Tier)</label>
-                <input type="number" id="fare-3a" class="form-control" value="1450" required>
+                <input type="number" id="fare-3a" class="form-control" value="1450" required min="100">
               </div>
               <div class="form-group">
                 <label class="form-label">2A (AC 2 Tier)</label>
-                <input type="number" id="fare-2a" class="form-control" value="2150" required>
+                <input type="number" id="fare-2a" class="form-control" value="2150" required min="100">
               </div>
               <div class="form-group">
                 <label class="form-label">SL (Sleeper)</label>
-                <input type="number" id="fare-sl" class="form-control" value="480" required>
+                <input type="number" id="fare-sl" class="form-control" value="480" required min="50">
               </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline" onclick="closeAddTrainModal()">Cancel</button>
-          <button type="submit" class="btn btn-secondary">Add Train</button>
+          <button type="submit" class="btn btn-secondary">Add Train to System</button>
         </div>
       </form>
     </div>
@@ -254,8 +474,8 @@
   <footer class="site-footer">
     <div class="container">
       <div class="footer-bottom">
-        <div>&copy; 2026 Railora Admin Operations Console.</div>
-        <div>System Protected with Role-Based Access Control</div>
+        <div>&copy; 2026 Railora Admin Operations Console. Protected under Role-Based Access Control.</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
       </div>
     </div>
   </footer>

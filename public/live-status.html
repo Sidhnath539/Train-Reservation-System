@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Train Running Status - Railora Indian Railways</title>
+  <meta name="description" content="Track live running status, delays, platform numbers and current station for Indian Railways trains.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/">Search Trains</a></li>
+        <li><a href="/schedule.html"><i class="fa-solid fa-calendar-days icon-svg-orange"></i> Train Schedule</a></li>
+        <li><a href="/live-status.html" class="active"><i class="fa-solid fa-location-dot icon-svg-orange"></i> Live Status</a></li>
+        <li><a href="/station-board.html">Station Board</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+        <li><a href="/contact.html">Help & Support</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <section class="page-hero-header">
+    <div class="container">
+      <h1 class="hero-title"><i class="fa-solid fa-satellite-dish"></i> Live Train Running Status (Spot Your Train)</h1>
+      <p class="hero-subtitle">Real-time simulated telemetry, delay tracking, upcoming stops, and platform numbers.</p>
+    </div>
+  </section>
+
+  <main class="container" style="margin-bottom: 50px;">
+    <!-- Live Status Search Bar -->
+    <div class="pnr-inquiry-box" style="margin-bottom: 24px;">
+      <h2 class="pnr-title">Spot Your Train Live</h2>
+      <p class="pnr-subtitle">Enter any 5-digit Indian Railways train number to track its current location.</p>
+
+      <form id="live-search-form" class="pnr-search-bar">
+        <input type="text" id="live-train-input" class="pnr-input" placeholder="e.g. 12301, 12004, 22436, 12952" maxlength="5" value="12301" required>
+        <button type="submit" class="btn btn-search pnr-submit-btn">
+          <i class="fa-solid fa-location-crosshairs"></i> Track Live
+        </button>
+      </form>
+
+      <div class="pnr-extra-info">
+        <span class="pnr-demo-label">Quick Trains:</span>
+        <button type="button" class="pnr-demo-chip" onclick="trackTrain('12301')">12301 (Howrah Rajdhani)</button>
+        <button type="button" class="pnr-demo-chip" onclick="trackTrain('22436')">22436 (Vande Bharat Express)</button>
+        <button type="button" class="pnr-demo-chip" onclick="trackTrain('12952')">12952 (Mumbai Tejas Rajdhani)</button>
+        <button type="button" class="pnr-demo-chip" onclick="trackTrain('12004')">12004 (Lucknow Shatabdi)</button>
+      </div>
+    </div>
+
+    <!-- Live Status Result Container -->
+    <div id="live-result-container">
+      <!-- Injected dynamically -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-brand-logo-index">
+            <div class="brand-icon footer-brand-icon-index">
+              <i class="fa-solid fa-train icon-svg-white footer-brand-fa"></i>
+            </div>
+            <div class="brand-name">Rail<span>ora</span></div>
+          </div>
+          <p>Indian Railway Passenger Reservation System powered by Node.js, Express, and MySQL. Designed for speed, high concurrency, and dependable rail travel bookings.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Passenger Services</h4>
+          <ul>
+            <li><a href="/">Book Train Ticket</a></li>
+            <li><a href="/pnr.html">PNR Status Inquiry</a></li>
+            <li><a href="/my-bookings.html">My Bookings</a></li>
+            <li><a href="/schedule.html">Train Timetable & Schedules</a></li>
+            <li><a href="/cancel.html">Ticket Cancellation & Refunds</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Security & Architecture</h4>
+          <ul>
+            <li><a href="#">ACID Database Transactions</a></li>
+            <li><a href="#">Parameterized SQL Queries</a></li>
+            <li><a href="#">Bcrypt Password Hashing</a></li>
+            <li><a href="/admin.html">Admin Operations</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>24x7 Railway Helplines</h4>
+          <p class="helpline-text">Passenger Enquiry: <strong>139</strong></p>
+          <p class="helpline-text">Security & Medical: <strong>182</strong></p>
+          <p class="helpline-text-last">Support: support@railora.gov.in</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      trackTrain('12301');
+
+      document.getElementById('live-search-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const num = document.getElementById('live-train-input').value.trim();
+        trackTrain(num);
+      });
+    });
+
+    async function trackTrain(trainNumber) {
+      if (!trainNumber) return;
+      document.getElementById('live-train-input').value = trainNumber;
+
+      const container = document.getElementById('live-result-container');
+      container.innerHTML = `
+        <div style="text-align: center; padding: 40px; background: #ffffff; border-radius: 8px; border: 1px solid #dee2e6;">
+          <i class="fa-solid fa-spinner fa-spin icon-svg-primary" style="font-size: 2rem;"></i>
+          <p style="margin-top: 12px; font-weight: 700; color: #082b53;">Connecting to Indian Railways Running Telemetry...</p>
+        </div>
+      `;
+
+      try {
+        const res = await fetchWithAuth(`/live/train-status/${trainNumber}`);
+        if (!res.success || !res.train) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 40px; background: #ffffff; border-radius: 8px; border: 1px solid #fee2e2;">
+              <i class="fa-solid fa-circle-exclamation icon-svg-danger" style="font-size: 2rem;"></i>
+              <h3 style="color: #991b1b; margin-top: 10px;">Train Not Found</h3>
+              <p style="color: #64748b;">No active schedule found for train number "${trainNumber}".</p>
+            </div>
+          `;
+          return;
+        }
+
+        const t = res.train;
+        const st = res.status;
+        const timeline = res.timeline || [];
+
+        container.innerHTML = `
+          <!-- Live Telemetry HUD Card -->
+          <div class="live-status-hero">
+            <div class="live-status-header">
+              <div>
+                <span class="badge badge-secondary">${t.train_type || 'Superfast Express'}</span>
+                <h2 style="font-size: 1.4rem; font-weight: 900; color: #082b53; margin: 6px 0;">${t.train_number} - ${t.train_name}</h2>
+                <div style="font-size: 0.85rem; color: #64748b;">
+                  <i class="fa-solid fa-calendar-check icon-svg-primary"></i> Runs: <strong>${t.runs_on || 'Daily'}</strong> | Telemetry updated: <strong>${st.last_updated}</strong>
+                </div>
+              </div>
+              <div>
+                <span class="badge ${st.delay_minutes <= 5 ? 'badge-cnf' : 'badge-rac'}" style="font-size: 0.95rem; padding: 6px 16px;">
+                  <i class="fa-solid fa-clock"></i> ${st.delay_status}
+                </span>
+              </div>
+            </div>
+
+            <!-- Current Position HUD Tiles -->
+            <div class="live-current-hud">
+              <div class="hud-tile highlight">
+                <div class="hud-label">Current Location</div>
+                <div class="hud-val">${st.current_station} (${st.current_code})</div>
+              </div>
+              <div class="hud-tile">
+                <div class="hud-label">Current Platform</div>
+                <div class="hud-val">Platform ${st.current_platform}</div>
+              </div>
+              <div class="hud-tile">
+                <div class="hud-label">Next Station</div>
+                <div class="hud-val">${st.next_station} (${st.next_code || '--'})</div>
+              </div>
+              <div class="hud-tile">
+                <div class="hud-label">Telemetry Status</div>
+                <div class="hud-val" style="color: #16a34a;"><i class="fa-solid fa-signal"></i> LIVE SIMULATED</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 16px; background: #fefce8; border: 1px solid #fef08a; padding: 8px 12px; border-radius: 4px; font-size: 0.78rem; color: #854d0e;">
+              <i class="fa-solid fa-info-circle"></i> <strong>Disclaimer:</strong> ${st.disclaimer}
+            </div>
+          </div>
+
+          <!-- Station-by-Station Timeline Table -->
+          <div class="timeline-card">
+            <h3 style="color: #082b53; font-size: 1.1rem; font-weight: 800; margin-bottom: 16px;">
+              <i class="fa-solid fa-route icon-svg-orange"></i> Station Progression & Halt Timeline
+            </h3>
+
+            <div class="table-responsive">
+              <table class="timeline-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Station Name</th>
+                    <th>Scheduled Arr</th>
+                    <th>Scheduled Dep</th>
+                    <th>Distance</th>
+                    <th>Platform</th>
+                    <th>Live Progress</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${timeline.map((s, idx) => `
+                    <tr class="${s.state === 'CURRENT' ? 'current-station-row' : (s.state === 'DEPARTED' ? 'departed-station-row' : '')}">
+                      <td><strong>${idx + 1}</strong></td>
+                      <td>
+                        <strong>${s.name}</strong>
+                        <span class="badge badge-secondary" style="font-size: 0.72rem; margin-left: 4px;">${s.code}</span>
+                      </td>
+                      <td>${s.arr}</td>
+                      <td>${s.dep}</td>
+                      <td>${s.dist} km</td>
+                      <td><strong>PF ${s.platform}</strong></td>
+                      <td>
+                        ${s.state === 'CURRENT' ? `
+                          <span class="station-pulse-badge"><i class="fa-solid fa-train"></i> At Station</span>
+                        ` : (s.state === 'DEPARTED' ? `
+                          <span style="color: #16a34a; font-weight: 700; font-size: 0.85rem;"><i class="fa-solid fa-circle-check"></i> Departed</span>
+                        ` : `
+                          <span style="color: #64748b; font-size: 0.85rem;">Expected</span>
+                        `)}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        container.innerHTML = `<p style="color: red; text-align: center;">${err.message}</p>`;
+      }
+    }
+  </script>
+</body>
+
+</html>

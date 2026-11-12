@@ -30,6 +30,9 @@ const authRoutes = require('./routes/authRoutes');       // Login, Register, Pro
 const trainRoutes = require('./routes/trainRoutes');     // Train Search, Schedule, Stations
 const bookingRoutes = require('./routes/bookingRoutes'); // Book Ticket, PNR Inquiry, Cancel
 const adminRoutes = require('./routes/adminRoutes');     // Admin Dashboard, Add/Delete Trains
+const paymentRoutes = require('./routes/paymentRoutes'); // Simulated Checkout & Payment Verification
+const liveRoutes = require('./routes/liveRoutes');       // Live Running Status & Station Board
+const contactRoutes = require('./routes/contactRoutes'); // Helpdesk Inquiries & FAQs
 
 // ----------------------------------------------------------------------------
 // STEP 2: CREATE AND CONFIGURE EXPRESS APP
@@ -52,6 +55,9 @@ app.use('/api/auth', authRoutes);          // Endpoints starting with /api/auth
 app.use('/api/trains', trainRoutes);       // Endpoints starting with /api/trains
 app.use('/api/bookings', bookingRoutes);   // Endpoints starting with /api/bookings
 app.use('/api/admin', adminRoutes);        // Endpoints starting with /api/admin
+app.use('/api/payments', paymentRoutes);   // Endpoints starting with /api/payments
+app.use('/api/live', liveRoutes);          // Endpoints starting with /api/live
+app.use('/api/contact', contactRoutes);    // Endpoints starting with /api/contact
 
 // ----------------------------------------------------------------------------
 // STEP 4: UTILITY & HEALTH CHECK ENDPOINTS

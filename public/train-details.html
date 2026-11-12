@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Train Details & Route - Railora Indian Railways</title>
+  <meta name="description" content="View complete timetable, halt durations, platform numbers, amenities, and fare chart for Indian Railways trains.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/">Search Trains</a></li>
+        <li><a href="/schedule.html" class="active"><i class="fa-solid fa-calendar-days icon-svg-orange"></i> Train Schedule</a></li>
+        <li><a href="/live-status.html"><i class="fa-solid fa-location-dot icon-svg-orange"></i> Live Status</a></li>
+        <li><a href="/station-board.html">Station Board</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+        <li><a href="/contact.html">Help & Support</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <section class="page-hero-header">
+    <div class="container">
+      <h1 class="hero-title" id="train-detail-title"><i class="fa-solid fa-train-subway"></i> Loading Train Details...</h1>
+      <p class="hero-subtitle" id="train-detail-subtitle">Official Indian Railways published route, timings, halts, and coach layout.</p>
+    </div>
+  </section>
+
+  <main class="container">
+    <!-- Train Overview Card -->
+    <div class="irctc-card" style="margin-bottom: 24px; padding: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
+        <div>
+          <span class="badge badge-secondary" id="train-type-badge" style="margin-bottom: 8px;">Superfast</span>
+          <h2 id="train-full-name" style="font-size: 1.5rem; font-weight: 800; color: #082b53; margin: 6px 0;">--</h2>
+          <p id="train-runs-on" style="color: #64748b; font-size: 0.9rem;"><i class="fa-solid fa-calendar-check icon-svg-primary"></i> Runs On: Loading...</p>
+        </div>
+        <div>
+          <a id="btn-book-train" href="/trains.html" class="btn btn-secondary" style="padding: 12px 24px; font-size: 1rem;">
+            <i class="fa-solid fa-ticket"></i> Book Ticket On This Train
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="hero-stats-grid" style="margin-top: 20px;">
+        <div class="hero-stat-card">
+          <div class="hero-stat-num" id="stat-source">--</div>
+          <div class="hero-stat-label">Source Station</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-num" id="stat-dest">--</div>
+          <div class="hero-stat-label">Destination Station</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-num" id="stat-duration">--</div>
+          <div class="hero-stat-label">Total Duration</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="hero-stat-num" id="stat-stops">--</div>
+          <div class="hero-stat-label">Scheduled Halts</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Amenities & Features Card -->
+    <div class="irctc-card" style="margin-bottom: 24px; padding: 24px;">
+      <h3 style="color: #082b53; font-size: 1.15rem; font-weight: 800; margin-bottom: 16px;">
+        <i class="fa-solid fa-bell-concierge icon-svg-orange"></i> On-Board Passenger Amenities
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 12px 16px; border-radius: 6px;">
+          <i class="fa-solid fa-utensils icon-svg-primary" style="font-size: 1.2rem;"></i>
+          <div><strong>Pantry Car:</strong> Catering / Meals Available</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 12px 16px; border-radius: 6px;">
+          <i class="fa-solid fa-plug icon-svg-primary" style="font-size: 1.2rem;"></i>
+          <div><strong>Power Sockets:</strong> In-seat Mobile & Laptop Charging</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 12px 16px; border-radius: 6px;">
+          <i class="fa-solid fa-bed icon-svg-primary" style="font-size: 1.2rem;"></i>
+          <div><strong>Linen / Bedrolls:</strong> Provided for AC 1A/2A/3A</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 12px 16px; border-radius: 6px;">
+          <i class="fa-solid fa-wifi icon-svg-primary" style="font-size: 1.2rem;"></i>
+          <div><strong>RailWire Wi-Fi:</strong> High-speed station internet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Complete Route Timetable Table -->
+    <div class="irctc-card" style="margin-bottom: 40px; padding: 24px;">
+      <h3 style="color: #082b53; font-size: 1.15rem; font-weight: 800; margin-bottom: 16px;">
+        <i class="fa-solid fa-map-location-dot icon-svg-primary"></i> Complete Route & Station Timings
+      </h3>
+      <div class="table-responsive">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Station Name & Code</th>
+              <th>Arrival</th>
+              <th>Departure</th>
+              <th>Halt Duration</th>
+              <th>Distance</th>
+              <th>Day</th>
+              <th>Platform</th>
+            </tr>
+          </thead>
+          <tbody id="route-table-body">
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 30px;">
+                <i class="fa-solid fa-spinner fa-spin icon-svg-primary"></i> Loading route timetable...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-brand-logo-index">
+            <div class="brand-icon footer-brand-icon-index">
+              <i class="fa-solid fa-train icon-svg-white footer-brand-fa"></i>
+            </div>
+            <div class="brand-name">Rail<span>ora</span></div>
+          </div>
+          <p>Indian Railway Passenger Reservation System powered by Node.js, Express, and MySQL. Designed for speed, high concurrency, and dependable rail travel bookings.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Passenger Services</h4>
+          <ul>
+            <li><a href="/">Book Train Ticket</a></li>
+            <li><a href="/pnr.html">PNR Status Inquiry</a></li>
+            <li><a href="/my-bookings.html">My Bookings</a></li>
+            <li><a href="/schedule.html">Train Timetable & Schedules</a></li>
+            <li><a href="/cancel.html">Ticket Cancellation & Refunds</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Security & Architecture</h4>
+          <ul>
+            <li><a href="#">ACID Database Transactions</a></li>
+            <li><a href="#">Parameterized SQL Queries</a></li>
+            <li><a href="#">Bcrypt Password Hashing</a></li>
+            <li><a href="/admin.html">Admin Operations</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>24x7 Railway Helplines</h4>
+          <p class="helpline-text">Passenger Enquiry: <strong>139</strong></p>
+          <p class="helpline-text">Security & Medical: <strong>182</strong></p>
+          <p class="helpline-text-last">Support: support@railora.gov.in</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const trainNumber = urlParams.get('trainNumber') || urlParams.get('train_number') || '12301';
+
+      try {
+        const res = await fetchWithAuth(`/trains/schedule/${trainNumber}`);
+        if (!res.success || !res.data) {
+          document.getElementById('train-detail-title').textContent = 'Train Not Found';
+          return;
+        }
+
+        const data = res.data;
+        const train = data;
+
+        document.getElementById('train-detail-title').innerHTML = `<i class="fa-solid fa-train-subway"></i> ${train.train_number} - ${train.train_name}`;
+        document.getElementById('train-full-name').textContent = `${train.train_number} - ${train.train_name}`;
+        document.getElementById('train-type-badge').textContent = train.train_type || 'Superfast Express';
+        document.getElementById('train-runs-on').innerHTML = `<i class="fa-solid fa-calendar-check icon-svg-primary"></i> Runs On: <strong>${train.runs_on || 'Daily'}</strong>`;
+
+        const stops = train.route || [];
+        if (stops.length > 0) {
+          document.getElementById('stat-source').textContent = stops[0].station_code;
+          document.getElementById('stat-dest').textContent = stops[stops.length - 1].station_code;
+          document.getElementById('stat-stops').textContent = stops.length.toString();
+          
+          const lastDist = stops[stops.length - 1].distance_from_source || 450;
+          document.getElementById('stat-duration').textContent = `${lastDist} km`;
+
+          document.getElementById('btn-book-train').href = `/book.html?train_id=1&train_number=${train.train_number}&from=${stops[0].station_code}&to=${stops[stops.length - 1].station_code}`;
+
+          const tbody = document.getElementById('route-table-body');
+          tbody.innerHTML = stops.map((s, idx) => `
+            <tr>
+              <td><strong>${idx + 1}</strong></td>
+              <td>
+                <strong>${s.station_name}</strong>
+                <span class="badge badge-secondary" style="font-size: 0.75rem; margin-left: 6px;">${s.station_code}</span>
+              </td>
+              <td>${s.arrival_time}</td>
+              <td>${s.departure_time}</td>
+              <td><span style="color: #64748b;">${s.halt_time || '--'}</span></td>
+              <td>${s.distance_from_source || (idx * 55)} km</td>
+              <td>Day ${s.day || 1}</td>
+              <td><span class="badge badge-outline" style="font-weight: 700;">PF ${s.platform_number || '1'}</span></td>
+            </tr>
+          `).join('');
+        }
+      } catch (err) {
+        document.getElementById('train-detail-title').textContent = 'Error Loading Train';
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+
+</html>

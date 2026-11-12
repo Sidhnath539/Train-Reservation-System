@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticket Cancellation & Refund - Railora Indian Railways</title>
+  <meta name="description" content="Online cancellation of Indian Railways train tickets with automatic refund calculation and seat inventory restoration.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/">Search Trains</a></li>
+        <li><a href="/schedule.html"><i class="fa-solid fa-calendar-days icon-svg-orange"></i> Train Schedule</a></li>
+        <li><a href="/live-status.html"><i class="fa-solid fa-location-dot icon-svg-orange"></i> Live Status</a></li>
+        <li><a href="/station-board.html">Station Board</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+        <li><a href="/contact.html">Help & Support</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <section class="page-hero-header">
+    <div class="container">
+      <h1 class="hero-title"><i class="fa-solid fa-ban"></i> Ticket Cancellation & Simulated Refunds</h1>
+      <p class="hero-subtitle">Cancel your train reservation, release berths back to waitlist passengers, and generate a simulated refund receipt.</p>
+    </div>
+  </section>
+
+  <main class="container" style="margin-bottom: 50px;">
+    <!-- PNR Lookup Form for Cancellation -->
+    <div class="pnr-inquiry-box" style="margin-bottom: 30px;">
+      <h2 class="pnr-title">Enter 10-Digit PNR To Cancel</h2>
+      <p class="pnr-subtitle">Enter the 10-digit PNR number found on your Electronic Reservation Slip.</p>
+
+      <form id="cancel-search-form" class="pnr-search-bar">
+        <input type="text" id="cancel-pnr-input" class="pnr-input" placeholder="e.g. 8429104821" maxlength="10" required>
+        <button type="submit" class="btn btn-search pnr-submit-btn">
+          <i class="fa-solid fa-magnifying-glass"></i> Fetch Ticket
+        </button>
+      </form>
+    </div>
+
+    <!-- Ticket Details & Cancellation Panel -->
+    <div id="cancel-details-container" style="display: none;">
+      <div class="irctc-card" style="padding: 28px; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px;">
+          <div>
+            <span class="badge badge-cnf" id="ticket-status-badge">CONFIRMED</span>
+            <h2 id="ticket-train-title" style="font-size: 1.3rem; font-weight: 800; color: #082b53; margin: 8px 0 4px;">--</h2>
+            <p id="ticket-route-meta" style="color: #64748b; font-size: 0.9rem;">--</p>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.8rem; color: #64748b;">PNR NUMBER</div>
+            <div id="ticket-pnr-num" style="font-size: 1.3rem; font-weight: 900; color: #082b53; letter-spacing: 1px;">--</div>
+          </div>
+        </div>
+
+        <!-- Passenger Manifest -->
+        <h3 style="font-size: 1.05rem; font-weight: 800; color: #082b53; margin-bottom: 12px;">
+          <i class="fa-solid fa-users icon-svg-primary"></i> Passengers On This Ticket
+        </h3>
+        <div class="table-responsive" style="margin-bottom: 24px;">
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Passenger Name</th>
+                <th>Age / Gender</th>
+                <th>Berth Preference</th>
+                <th>Allocated Berth</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="ticket-passengers-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Refund Calculation Card -->
+        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+          <h4 style="color: #082b53; font-weight: 800; margin-bottom: 14px;">
+            <i class="fa-solid fa-calculator icon-svg-orange"></i> Refund Breakdown (Indian Railways Clerkage Rules)
+          </h4>
+          <div class="summary-row">
+            <span>Total Paid Ticket Fare:</span>
+            <strong id="calc-paid-fare">₹0.00</strong>
+          </div>
+          <div class="summary-row" style="color: #dc2626;">
+            <span>Standard Clerkage / Cancellation Fee (₹60/passenger):</span>
+            <strong id="calc-clerkage-fee">- ₹60.00</strong>
+          </div>
+          <div class="summary-total" style="border-top: 1px solid #cbd5e1; margin-top: 8px;">
+            <span>Simulated Refund Amount to Bank/UPI:</span>
+            <strong style="color: #16a34a;" id="calc-refund-amount">₹0.00</strong>
+          </div>
+        </div>
+
+        <!-- Cancellation Reason -->
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label class="form-label" for="cancel-reason-select">Select Reason for Cancellation</label>
+          <select id="cancel-reason-select" class="form-control">
+            <option value="Change of travel plans">Change of travel plans</option>
+            <option value="Personal emergency">Personal emergency</option>
+            <option value="Train schedule / timing change">Train schedule / timing change</option>
+            <option value="Alternative transport arranged">Alternative transport arranged</option>
+            <option value="Duplicate booking made">Duplicate booking made</option>
+          </select>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+          <a href="/my-bookings.html" class="btn btn-outline">Keep Ticket</a>
+          <button type="button" class="btn btn-danger" id="btn-submit-cancellation">
+            <i class="fa-solid fa-ban"></i> Confirm Ticket Cancellation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refund Voucher (Visible after successful cancellation) -->
+    <div id="refund-voucher-container" style="display: none;">
+      <div style="background: #ffffff; border: 2px solid #16a34a; border-radius: 8px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px; border-bottom: 1px solid #bbf7d0; padding-bottom: 14px;">
+          <i class="fa-solid fa-circle-check" style="font-size: 2.2rem; color: #16a34a;"></i>
+          <div>
+            <h2 style="color: #166534; font-size: 1.3rem; font-weight: 800; margin: 0;">Ticket Successfully Cancelled</h2>
+            <p style="color: #15803d; margin: 4px 0 0; font-size: 0.9rem;">Simulated refund voucher generated and berths restored to available inventory.</p>
+          </div>
+        </div>
+
+        <div class="hero-stats-grid" style="margin-bottom: 20px;">
+          <div class="hero-stat-card">
+            <div class="hero-stat-num" id="res-refund-amount" style="color: #16a34a;">₹0.00</div>
+            <div class="hero-stat-label">Refund Amount</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="hero-stat-num" id="res-cancel-charge" style="color: #dc2626;">₹0.00</div>
+            <div class="hero-stat-label">Cancellation Fee</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="hero-stat-num" id="res-refund-txn" style="font-size: 1.05rem;">--</div>
+            <div class="hero-stat-label">Refund Transaction Ref</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+          <button type="button" class="btn btn-search" onclick="window.print()">
+            <i class="fa-solid fa-print"></i> Print Refund Receipt
+          </button>
+          <a href="/my-bookings.html" class="btn btn-outline">Go to My Bookings</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-brand-logo-index">
+            <div class="brand-icon footer-brand-icon-index">
+              <i class="fa-solid fa-train icon-svg-white footer-brand-fa"></i>
+            </div>
+            <div class="brand-name">Rail<span>ora</span></div>
+          </div>
+          <p>Indian Railway Passenger Reservation System powered by Node.js, Express, and MySQL. Designed for speed, high concurrency, and dependable rail travel bookings.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Passenger Services</h4>
+          <ul>
+            <li><a href="/">Book Train Ticket</a></li>
+            <li><a href="/pnr.html">PNR Status Inquiry</a></li>
+            <li><a href="/my-bookings.html">My Bookings</a></li>
+            <li><a href="/schedule.html">Train Timetable & Schedules</a></li>
+            <li><a href="/cancel.html">Ticket Cancellation & Refunds</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Security & Architecture</h4>
+          <ul>
+            <li><a href="#">ACID Database Transactions</a></li>
+            <li><a href="#">Parameterized SQL Queries</a></li>
+            <li><a href="#">Bcrypt Password Hashing</a></li>
+            <li><a href="/admin.html">Admin Operations</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>24x7 Railway Helplines</h4>
+          <p class="helpline-text">Passenger Enquiry: <strong>139</strong></p>
+          <p class="helpline-text">Security & Medical: <strong>182</strong></p>
+          <p class="helpline-text-last">Support: support@railora.gov.in</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    let currentLoadedBooking = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialPnr = urlParams.get('pnr');
+      if (initialPnr) {
+        document.getElementById('cancel-pnr-input').value = initialPnr;
+        fetchBookingToCancel(initialPnr);
+      }
+
+      document.getElementById('cancel-search-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pnr = document.getElementById('cancel-pnr-input').value.trim();
+        fetchBookingToCancel(pnr);
+      });
+
+      document.getElementById('btn-submit-cancellation').addEventListener('click', executeCancellation);
+    });
+
+    async function fetchBookingToCancel(pnr) {
+      if (!pnr || pnr.length < 8) {
+        showToast('Please enter a valid 10-digit PNR.', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetchWithAuth(`/bookings/pnr/${pnr}`);
+        if (!res.success || !res.booking) {
+          showToast(res.message || 'Ticket not found.', 'error');
+          return;
+        }
+
+        currentLoadedBooking = res.booking;
+        const b = currentLoadedBooking;
+
+        if (b.booking_status === 'CANCELLED') {
+          showToast('This ticket is already cancelled.', 'info');
+        }
+
+        document.getElementById('cancel-details-container').style.display = 'block';
+        document.getElementById('refund-voucher-container').style.display = 'none';
+
+        document.getElementById('ticket-pnr-num').textContent = b.pnr_number;
+        document.getElementById('ticket-train-title').textContent = `${b.train_number} - ${b.train_name}`;
+        document.getElementById('ticket-route-meta').textContent = `${b.source_city} (${b.source_code}) ➔ ${b.dest_city} (${b.dest_code}) | Date: ${formatDate(b.journey_date)} | Class: ${b.class_code}`;
+        document.getElementById('ticket-status-badge').textContent = b.booking_status;
+
+        const tbody = document.getElementById('ticket-passengers-tbody');
+        tbody.innerHTML = (b.passengers || []).map((p, idx) => `
+          <tr>
+            <td><strong>${idx + 1}</strong></td>
+            <td><strong>${p.name}</strong></td>
+            <td>${p.age} yrs / ${p.gender}</td>
+            <td>${p.berth_preference || 'No Preference'}</td>
+            <td><strong>${p.allocated_seat}</strong></td>
+            <td><span class="badge ${p.status === 'CNF' ? 'badge-cnf' : 'badge-wl'}">${p.status}</span></td>
+          </tr>
+        `).join('');
+
+        const count = b.total_passengers || (b.passengers ? b.passengers.length : 1);
+        const cancelFee = count * 60;
+        const refundAmt = Math.max(0, parseFloat(b.total_fare) - cancelFee);
+
+        document.getElementById('calc-paid-fare').textContent = formatCurrency(b.total_fare);
+        document.getElementById('calc-clerkage-fee').textContent = `- ${formatCurrency(cancelFee)}`;
+        document.getElementById('calc-refund-amount').textContent = formatCurrency(refundAmt);
+
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function executeCancellation() {
+      if (!currentLoadedBooking) return;
+
+      if (!confirm(`Are you sure you want to cancel PNR ${currentLoadedBooking.pnr_number}? This will immediately release all reserved seats.`)) {
+        return;
+      }
+
+      try {
+        const reason = document.getElementById('cancel-reason-select').value;
+        const res = await fetchWithAuth(`/bookings/cancel/${currentLoadedBooking.pnr_number}`, {
+          method: 'POST',
+          body: JSON.stringify({ reason })
+        });
+
+        if (res.success) {
+          showToast('Ticket cancelled successfully!', 'success');
+          document.getElementById('cancel-details-container').style.display = 'none';
+          document.getElementById('refund-voucher-container').style.display = 'block';
+
+          document.getElementById('res-refund-amount').textContent = formatCurrency(res.refund_amount);
+          document.getElementById('res-cancel-charge').textContent = formatCurrency(res.cancellation_charge);
+          document.getElementById('res-refund-txn').textContent = res.refund_transaction_id;
+        } else {
+          showToast(res.message || 'Cancellation failed.', 'error');
+        }
+      } catch (err) {
+        showToast(err.message || 'Failed to cancel ticket.', 'error');
+      }
+    }
+  </script>
+</body>
+
+</html>

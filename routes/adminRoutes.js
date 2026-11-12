@@ -327,4 +327,99 @@ router.get('/bookings', async (req, res) => {
   }
 });
 
+// ----------------------------------------------------------------------------
+// ROUTE 6: GET ALL SIMULATED PAYMENTS
+// GET /api/admin/payments
+// ----------------------------------------------------------------------------
+router.get('/payments', async (req, res) => {
+  try {
+    const [payments] = await pool.query(
+      `SELECT p.*, b.pnr_number, u.name AS user_name, u.email AS user_email
+       FROM payments p
+       JOIN bookings b ON p.booking_id = b.id
+       JOIN users u ON p.user_id = u.id
+       ORDER BY p.created_at DESC LIMIT 100`
+    );
+
+    res.json({
+      success: true,
+      count: payments.length,
+      payments
+    });
+  } catch (error) {
+    console.error('Error fetching payments:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to retrieve payments.' });
+  }
+});
+
+// ----------------------------------------------------------------------------
+// ROUTE 7: GET ALL SIMULATED REFUNDS
+// GET /api/admin/refunds
+// ----------------------------------------------------------------------------
+router.get('/refunds', async (req, res) => {
+  try {
+    const [refunds] = await pool.query(
+      `SELECT r.*, c.pnr_number, c.cancellation_charge, u.name AS user_name, u.email AS user_email
+       FROM refunds r
+       JOIN cancellations c ON r.cancellation_id = c.id
+       JOIN users u ON r.user_id = u.id
+       ORDER BY r.processed_at DESC LIMIT 100`
+    );
+
+    res.json({
+      success: true,
+      count: refunds.length,
+      refunds
+    });
+  } catch (error) {
+    console.error('Error fetching refunds:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to retrieve refunds.' });
+  }
+});
+
+// ----------------------------------------------------------------------------
+// ROUTE 8: GET ALL REGISTERED USERS
+// GET /api/admin/users
+// ----------------------------------------------------------------------------
+router.get('/users', async (req, res) => {
+  try {
+    const [users] = await pool.query(
+      `SELECT id, name, email, phone, role, created_at,
+              (SELECT COUNT(*) FROM bookings WHERE bookings.user_id = users.id) AS total_bookings
+       FROM users
+       ORDER BY id ASC`
+    );
+
+    res.json({
+      success: true,
+      count: users.length,
+      users
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to retrieve users.' });
+  }
+});
+
+// ----------------------------------------------------------------------------
+// ROUTE 9: GET SUPPORT & HELPDESK MESSAGES
+// GET /api/admin/messages
+// ----------------------------------------------------------------------------
+router.get('/messages', async (req, res) => {
+  try {
+    const [messages] = await pool.query(
+      'SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 100'
+    );
+
+    res.json({
+      success: true,
+      count: messages.length,
+      messages
+    });
+  } catch (error) {
+    console.error('Error fetching messages:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to retrieve messages.' });
+  }
+});
+
 module.exports = router;

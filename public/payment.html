@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Checkout (Simulated) - Railora Indian Railways</title>
+  <meta name="description" content="Simulated zero-budget payment gateway for Indian Railway ticket reservations.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/">Search Trains</a></li>
+        <li><a href="/schedule.html"><i class="fa-solid fa-calendar-days icon-svg-orange"></i> Train Schedule</a></li>
+        <li><a href="/live-status.html"><i class="fa-solid fa-location-dot icon-svg-orange"></i> Live Status</a></li>
+        <li><a href="/station-board.html">Station Board</a></li>
+        <li><a href="/pnr.html">PNR Status</a></li>
+        <li><a href="/my-bookings.html">My Bookings</a></li>
+        <li><a href="/contact.html">Help & Support</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <section class="page-hero-header">
+    <div class="container">
+      <h1 class="hero-title"><i class="fa-solid fa-lock"></i> Indian Railways Secure Checkout</h1>
+      <p class="hero-subtitle">Demonstration simulated payment portal. No real money or bank accounts are debited.</p>
+    </div>
+  </section>
+
+  <main class="container">
+    <div class="payment-grid" style="margin-bottom: 40px;">
+      <!-- Left Column: Payment Methods -->
+      <div class="payment-methods-card">
+        <div class="payment-tabs">
+          <button type="button" class="payment-tab-btn active" data-tab="upi">
+            <i class="fa-solid fa-qrcode"></i> UPI / QR Code
+          </button>
+          <button type="button" class="payment-tab-btn" data-tab="cards">
+            <i class="fa-solid fa-credit-card"></i> Debit / Credit Card
+          </button>
+          <button type="button" class="payment-tab-btn" data-tab="netbanking">
+            <i class="fa-solid fa-building-columns"></i> Net Banking
+          </button>
+        </div>
+
+        <!-- Tab 1: UPI / QR -->
+        <div class="payment-tab-content" id="tab-content-upi">
+          <div class="demo-payment-pill"><i class="fa-solid fa-flask"></i> DEMO PAYMENT - ZERO BUDGET</div>
+          <h3 style="color: #082b53; font-weight: 800; font-size: 1.15rem; margin-bottom: 8px;">Scan Dynamic UPI QR Code</h3>
+          <p style="color: #64748b; font-size: 0.88rem;">Scan using any UPI app (Google Pay, PhonePe, Paytm, BHIM, CRED).</p>
+
+          <div class="upi-qr-box">
+            <!-- Simulated QR code display -->
+            <div style="background: #ffffff; width: 180px; height: 180px; margin: 0 auto 12px; border: 2px solid #cbd5e1; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06);">
+              <i class="fa-solid fa-qrcode" style="font-size: 120px; color: #082b53;"></i>
+              <span style="font-size: 0.72rem; font-weight: 700; color: #fb792b; margin-top: 4px;">RAILORA FASTPAY</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #334155;">UPI ID: <strong>railora.pay@gov.in</strong></p>
+          </div>
+
+          <div class="form-group" style="margin-top: 16px;">
+            <label class="form-label" for="upi-vpa">Or Enter Your Virtual Payment Address (VPA / UPI ID)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="upi-vpa" class="form-control" placeholder="e.g. rahul@oksbi or 9811223344@paytm" value="rahul@okhdfcbank">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="showToast('UPI payment request pushed to your app!', 'info')">Verify VPA</button>
+            </div>
+          </div>
+
+          <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-search" id="btn-pay-upi" style="flex: 2; padding: 14px;">
+              <i class="fa-solid fa-circle-check"></i> Authorize Demo UPI Payment
+            </button>
+            <button type="button" class="btn btn-outline" id="btn-pay-fail" style="flex: 1; border-color: #ef4444; color: #ef4444;">
+              <i class="fa-solid fa-triangle-exclamation"></i> Test Bank Decline
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab 2: Cards -->
+        <div class="payment-tab-content" id="tab-content-cards" style="display: none;">
+          <div class="demo-payment-pill"><i class="fa-solid fa-flask"></i> DEMO PAYMENT - ZERO BUDGET</div>
+          <h3 style="color: #082b53; font-weight: 800; font-size: 1.15rem; margin-bottom: 16px;">Enter ATM / Debit or Credit Card</h3>
+          
+          <div class="form-group">
+            <label class="form-label" for="card-num">Card Number (16 Digits)</label>
+            <input type="text" id="card-num" class="form-control" placeholder="4111 2222 3333 4444" value="4532 8901 2345 6789" maxlength="19">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+              <label class="form-label" for="card-exp">Expiry (MM/YY)</label>
+              <input type="text" id="card-exp" class="form-control" placeholder="12/28" value="08/29" maxlength="5">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="card-cvv">CVV (3 Digits)</label>
+              <input type="password" id="card-cvv" class="form-control" placeholder="•••" value="888" maxlength="3">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="card-name">Cardholder Full Name</label>
+            <input type="text" id="card-name" class="form-control" placeholder="Name as printed on card" value="Rahul Sharma">
+          </div>
+
+          <button type="button" class="btn btn-search" id="btn-pay-card" style="width: 100%; padding: 14px; margin-top: 12px;">
+            <i class="fa-solid fa-lock"></i> Authorize Demo Card Payment
+          </button>
+        </div>
+
+        <!-- Tab 3: Net Banking -->
+        <div class="payment-tab-content" id="tab-content-netbanking" style="display: none;">
+          <div class="demo-payment-pill"><i class="fa-solid fa-flask"></i> DEMO PAYMENT - ZERO BUDGET</div>
+          <h3 style="color: #082b53; font-weight: 800; font-size: 1.15rem; margin-bottom: 16px;">Select Your Bank</h3>
+
+          <div class="form-group">
+            <label class="form-label">Popular Indian Banks</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+              <label style="border: 1px solid #cbd5e1; padding: 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="bank_select" value="SBI" checked> State Bank of India
+              </label>
+              <label style="border: 1px solid #cbd5e1; padding: 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="bank_select" value="HDFC"> HDFC Bank
+              </label>
+              <label style="border: 1px solid #cbd5e1; padding: 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="bank_select" value="ICICI"> ICICI Bank
+              </label>
+              <label style="border: 1px solid #cbd5e1; padding: 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="bank_select" value="PNB"> Punjab National Bank
+              </label>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-search" id="btn-pay-netbank" style="width: 100%; padding: 14px;">
+            <i class="fa-solid fa-building-columns"></i> Proceed with Demo Net Banking
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Column: Booking Summary Card -->
+      <aside class="payment-summary-card">
+        <h3 style="color: #082b53; font-size: 1.15rem; font-weight: 800; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+          <i class="fa-solid fa-receipt icon-svg-orange"></i> Fare Summary
+        </h3>
+
+        <div class="summary-train-badge" id="summary-train-name">12301 - New Delhi Rajdhani</div>
+
+        <div class="summary-row">
+          <span>Journey Route</span>
+          <strong id="summary-route">NDLS ➔ HWH</strong>
+        </div>
+        <div class="summary-row">
+          <span>Travel Date</span>
+          <strong id="summary-date">Loading...</strong>
+        </div>
+        <div class="summary-row">
+          <span>Class & Quota</span>
+          <strong id="summary-class-quota">AC 3 Tier | GENERAL</strong>
+        </div>
+        <div class="summary-row">
+          <span>Passengers</span>
+          <strong id="summary-passengers">1 Passenger</strong>
+        </div>
+        <div class="summary-row">
+          <span>Base Ticket Fare</span>
+          <span id="summary-base">₹0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>GST (5%)</span>
+          <span id="summary-gst">₹0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Convenience Fee</span>
+          <span>₹15.00</span>
+        </div>
+
+        <div class="summary-total">
+          <span>Total Payable</span>
+          <span class="total-amount" id="summary-total">₹0.00</span>
+        </div>
+
+        <div style="margin-top: 20px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; font-size: 0.8rem; color: #166534;">
+          <i class="fa-solid fa-shield-check"></i> <strong>Zero Double-Booking Guarantee:</strong> Berths are locked using atomic MySQL transactions during checkout.
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-brand-logo-index">
+            <div class="brand-icon footer-brand-icon-index">
+              <i class="fa-solid fa-train icon-svg-white footer-brand-fa"></i>
+            </div>
+            <div class="brand-name">Rail<span>ora</span></div>
+          </div>
+          <p>Indian Railway Passenger Reservation System powered by Node.js, Express, and MySQL. Designed for speed, high concurrency, and dependable rail travel bookings.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Passenger Services</h4>
+          <ul>
+            <li><a href="/">Book Train Ticket</a></li>
+            <li><a href="/pnr.html">PNR Status Inquiry</a></li>
+            <li><a href="/my-bookings.html">My Bookings</a></li>
+            <li><a href="/schedule.html">Train Timetable & Schedules</a></li>
+            <li><a href="/cancel.html">Ticket Cancellation & Refunds</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Security & Architecture</h4>
+          <ul>
+            <li><a href="#">ACID Database Transactions</a></li>
+            <li><a href="#">Parameterized SQL Queries</a></li>
+            <li><a href="#">Bcrypt Password Hashing</a></li>
+            <li><a href="/admin.html">Admin Operations</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>24x7 Railway Helplines</h4>
+          <p class="helpline-text">Passenger Enquiry: <strong>139</strong></p>
+          <p class="helpline-text">Security & Medical: <strong>182</strong></p>
+          <p class="helpline-text-last">Support: support@railora.gov.in</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Enforce login
+      if (!getToken()) {
+        showToast('Please log in to continue.', 'warning');
+        setTimeout(() => window.location.href = '/login.html', 800);
+        return;
+      }
+
+      // 2. Read pending booking from sessionStorage
+      const rawPending = sessionStorage.getItem('railora_pending_booking');
+      if (!rawPending) {
+        showToast('No active booking checkout found. Redirecting to train search.', 'warning');
+        setTimeout(() => window.location.href = '/trains.html', 1000);
+        return;
+      }
+
+      const pending = JSON.parse(rawPending);
+
+      // Populate summary
+      document.getElementById('summary-train-name').textContent = `${pending.train_number} - ${pending.train_name}`;
+      document.getElementById('summary-route').textContent = `${pending.source_code || 'NDLS'} ➔ ${pending.dest_code || 'HWH'}`;
+      document.getElementById('summary-date').textContent = formatDate(pending.journey_date);
+      document.getElementById('summary-class-quota').textContent = `${pending.class_code} | ${pending.quota || 'GENERAL'}`;
+      document.getElementById('summary-passengers').textContent = `${pending.passengers.length} Passenger(s)`;
+      
+      const subtotal = pending.fare_estimate ? pending.fare_estimate.subtotal : (pending.total_fare - 15);
+      const gst = pending.fare_estimate ? pending.fare_estimate.gst : 0;
+      const total = pending.total_fare;
+
+      document.getElementById('summary-base').textContent = formatCurrency(subtotal);
+      document.getElementById('summary-gst').textContent = formatCurrency(gst);
+      document.getElementById('summary-total').textContent = formatCurrency(total);
+
+      // Tab Switching
+      const tabBtns = document.querySelectorAll('.payment-tab-btn');
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const tabName = btn.dataset.tab;
+          document.querySelectorAll('.payment-tab-content').forEach(c => c.style.display = 'none');
+          const activeContent = document.getElementById(`tab-content-${tabName}`);
+          if (activeContent) activeContent.style.display = 'block';
+        });
+      });
+
+      // Handle Authorize Payment
+      async function executeDemoPayment(method) {
+        showToast('Authorizing simulated payment with Indian Railways gateway...', 'info');
+
+        try {
+          // Send request to book endpoint with payment details
+          const payload = {
+            train_id: pending.train_id,
+            class_code: pending.class_code,
+            journey_date: pending.journey_date,
+            quota: pending.quota || 'GENERAL',
+            passengers: pending.passengers,
+            payment_method: method,
+            transaction_id: `TXN_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`
+          };
+
+          const res = await fetchWithAuth('/bookings/book', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          if (res.success && res.booking) {
+            sessionStorage.removeItem('railora_pending_booking');
+            showToast('Payment Authorized & Berths Confirmed!', 'success');
+            setTimeout(() => {
+              window.location.href = `/booking-confirmation.html?pnr=${res.booking.pnr_number}`;
+            }, 800);
+          } else {
+            showToast(res.message || 'Booking failed.', 'error');
+          }
+        } catch (err) {
+          showToast(err.message || 'Payment processing error.', 'error');
+        }
+      }
+
+      document.getElementById('btn-pay-upi').addEventListener('click', () => executeDemoPayment('UPI (Google Pay)'));
+      document.getElementById('btn-pay-card').addEventListener('click', () => executeDemoPayment('Debit Card'));
+      document.getElementById('btn-pay-netbank').addEventListener('click', () => executeDemoPayment('Net Banking (SBI)'));
+
+      document.getElementById('btn-pay-fail').addEventListener('click', () => {
+        showToast('Demo Bank Error: 104 - Insufficient funds / Transaction declined by issuing bank.', 'error');
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact & Passenger Helpdesk - Railora Indian Railways</title>
+  <meta name="description"
+    content="Official Indian Railways passenger helpdesk, 24x7 emergency helpline 139/182, grievance registration, and reservation FAQs.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- Top Motto Bar (Safety | Security | Punctuality) -->
+  <div class="top-motto-bar">
+    <div class="container motto-container">
+      <div class="motto-items">
+        <span>Safety</span>
+        <span class="motto-sep">|</span>
+        <span>Security</span>
+        <span class="motto-sep">|</span>
+        <span>Punctuality</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-train icon-svg-white"></i>
+        </div>
+        <div class="brand-name">Rail<span>ora</span><span class="brand-badge">IRCTC Partner</span></div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/"><i class="fa-solid fa-magnifying-glass"></i> Search Trains</a></li>
+        <li><a href="/schedule.html"><i class="fa-solid fa-calendar-days"></i> Train Schedule</a></li>
+        <li><a href="/pnr.html"><i class="fa-solid fa-clipboard-check"></i> PNR Status</a></li>
+        <li><a href="/live-status.html"><i class="fa-solid fa-satellite-dish"></i> Live Status</a></li>
+        <li><a href="/my-bookings.html"><i class="fa-solid fa-ticket"></i> My Bookings</a></li>
+        <li><a href="/contact.html" class="active"><i class="fa-solid fa-headset"></i> Helpdesk</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically by api.js -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Hero Banner -->
+  <section class="page-header-banner">
+    <div class="container">
+      <div class="header-banner-badge"><i class="fa-solid fa-headset"></i> 24x7 PASSENGER SUPPORT</div>
+      <h1>Contact & Passenger Grievance Portal</h1>
+      <p>RailMadad assistance, round-the-clock Indian Railways toll-free helplines, and reservation query support.</p>
+    </div>
+  </section>
+
+  <!-- Main Content Container -->
+  <main class="container page-content-container">
+
+    <!-- 24x7 Emergency Helplines Grid -->
+    <div class="contact-helpline-grid">
+      <div class="helpline-card highlight-card">
+        <div class="helpline-icon-wrap bg-primary">
+          <i class="fa-solid fa-phone-volume"></i>
+        </div>
+        <div class="helpline-content">
+          <span class="helpline-tag">NATIONAL RAILWAY HELPLINE</span>
+          <h2 class="helpline-number">139</h2>
+          <p class="helpline-desc">RailMadad integrated single-window for PNR status, live running info, catering, and coach grievances.</p>
+          <a href="tel:139" class="btn btn-sm btn-outline"><i class="fa-solid fa-phone"></i> Call 139 Toll-Free</a>
+        </div>
+      </div>
+
+      <div class="helpline-card">
+        <div class="helpline-icon-wrap bg-danger">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="helpline-content">
+          <span class="helpline-tag">SECURITY & MEDICAL</span>
+          <h2 class="helpline-number">182 / 112</h2>
+          <p class="helpline-desc">Railway Protection Force (RPF) emergency response for women safety, theft, and en-route medical emergencies.</p>
+          <a href="tel:182" class="btn btn-sm btn-outline"><i class="fa-solid fa-phone"></i> Emergency RPF</a>
+        </div>
+      </div>
+
+      <div class="helpline-card">
+        <div class="helpline-icon-wrap bg-warning">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div class="helpline-content">
+          <span class="helpline-tag">DISASTER & ACCIDENT RELIEF</span>
+          <h2 class="helpline-number">1072</h2>
+          <p class="helpline-desc">Direct line to Central Railway Disaster Management Cell for accident inquiries and relative assistance.</p>
+          <a href="tel:1072" class="btn btn-sm btn-outline"><i class="fa-solid fa-phone"></i> Call 1072</a>
+        </div>
+      </div>
+
+      <div class="helpline-card">
+        <div class="helpline-icon-wrap bg-success">
+          <i class="fa-solid fa-envelope-open-text"></i>
+        </div>
+        <div class="helpline-content">
+          <span class="helpline-tag">ELECTRONIC TICKET HELPDESK</span>
+          <h2 class="helpline-email">support@railora.gov.in</h2>
+          <p class="helpline-desc">Official support desk for E-ticket download issues, cancellation refund vouchers, and account recovery.</p>
+          <a href="mailto:support@railora.gov.in" class="btn btn-sm btn-outline"><i class="fa-solid fa-envelope"></i> Send Email</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grievance Form & Info Layout -->
+    <div class="contact-layout-grid">
+      <!-- Left Column: Grievance & Query Submission Form -->
+      <div class="card contact-form-card">
+        <div class="card-header">
+          <h3 class="card-title"><i class="fa-solid fa-ticket-simple icon-svg-orange"></i> Register Passenger Query / Grievance</h3>
+          <p class="card-subtitle">Submit your ticket or general booking concern. A unique grievance tracking ID will be generated.</p>
+        </div>
+
+        <div id="contact-alert" class="alert-box" style="display: none;"></div>
+
+        <form id="contact-form" class="card-body">
+          <div class="form-row form-row-2col">
+            <div class="form-group">
+              <label class="form-label" for="contact-name">Full Name <span class="text-danger">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-user input-icon"></i>
+                <input type="text" id="contact-name" class="form-control" placeholder="Enter your full name" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="contact-email">Email Address <span class="text-danger">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-envelope input-icon"></i>
+                <input type="email" id="contact-email" class="form-control" placeholder="passenger@email.com" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row form-row-2col">
+            <div class="form-group">
+              <label class="form-label" for="contact-phone">Mobile Number</label>
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-phone input-icon"></i>
+                <input type="tel" id="contact-phone" class="form-control" placeholder="10-digit mobile number" maxlength="10">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="contact-category">Concern Category <span class="text-danger">*</span></label>
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-layer-group input-icon"></i>
+                <select id="contact-category" class="form-control" required>
+                  <option value="Ticket Booking">Ticket Booking & Reservation</option>
+                  <option value="Cancellation & Refund">Cancellation & Refund Voucher</option>
+                  <option value="PNR Status & Berth">PNR Status & Berth Allocation</option>
+                  <option value="Payment Gateway">Payment Simulation / Transaction Query</option>
+                  <option value="Train Running Status">Train Running Delay / Schedule</option>
+                  <option value="General Feedback">General Feedback / Suggestion</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="contact-subject">Subject <span class="text-danger">*</span></label>
+            <div class="input-icon-wrap">
+              <i class="fa-solid fa-heading input-icon"></i>
+              <input type="text" id="contact-subject" class="form-control" placeholder="Brief summary of your query (e.g. Refund status for PNR 8429104821)" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="contact-message">Detailed Description <span class="text-danger">*</span></label>
+            <textarea id="contact-message" class="form-control" rows="5" placeholder="Provide full details of your journey, train number, travel date, or payment transaction..." required></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-secondary btn-lg" id="btn-submit-contact">
+              <i class="fa-solid fa-paper-plane"></i> Submit Grievance Ticket
+            </button>
+            <button type="reset" class="btn btn-outline">
+              <i class="fa-solid fa-rotate-left"></i> Reset Form
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right Column: Zonal PRS Centers & Operational Guidelines -->
+      <div class="contact-side-info">
+        <!-- Zonal PRS Counters -->
+        <div class="card side-card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="fa-solid fa-building-columns icon-svg-primary"></i> PRS Operations Centers</h4>
+          </div>
+          <div class="card-body">
+            <div class="zonal-center-item">
+              <strong>Northern Railway (NR)</strong>
+              <p>Baroda House, Kasturba Gandhi Marg, New Delhi 110001</p>
+              <span class="center-zone-badge">HQ - Delhi</span>
+            </div>
+            <div class="zonal-center-item">
+              <strong>Eastern Railway (ER)</strong>
+              <p>Fairlie Place, 17 Netaji Subhas Road, Kolkata 700001</p>
+              <span class="center-zone-badge">HQ - Howrah/Kolkata</span>
+            </div>
+            <div class="zonal-center-item">
+              <strong>Western Railway (WR)</strong>
+              <p>Rail Nilayam, Churchgate Station Building, Mumbai 400020</p>
+              <span class="center-zone-badge">HQ - Mumbai</span>
+            </div>
+            <div class="zonal-center-item">
+              <strong>North Central Railway (NCR)</strong>
+              <p>Subedarganj, Prayagraj, Uttar Pradesh 211015</p>
+              <span class="center-zone-badge">HQ - Prayagraj</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demonstration Notice Box -->
+        <div class="card side-card demo-notice-card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="fa-solid fa-shield-cat icon-svg-orange"></i> Academic & Demo Disclosure</h4>
+          </div>
+          <div class="card-body">
+            <p class="demo-notice-text">
+              Railora is a demonstration Indian Railway passenger reservation portal developed for academic engineering presentation.
+              All payment transactions, refund vouchers, and PNR numbers are simulated on a local MySQL engine and do not interface with live Indian Railways servers.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Frequently Asked Questions Section -->
+    <section class="contact-faqs-section">
+      <div class="section-title-wrap text-center">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">Find quick answers to passenger queries, ticket cancellation rules, and booking procedures.</p>
+      </div>
+
+      <div class="faq-accordion" id="faq-accordion-container">
+        <!-- Populated dynamically via GET /api/contact/faqs -->
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Loading railway reservation FAQs...</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-brand-logo-index">
+            <div class="brand-icon footer-brand-icon-index">
+              <i class="fa-solid fa-train icon-svg-white footer-brand-fa"></i>
+            </div>
+            <div class="brand-name">Rail<span>ora</span></div>
+          </div>
+          <p>Indian Railway Passenger Reservation System powered by Node.js, Express, and MySQL. Designed for speed,
+            high concurrency, and dependable rail travel bookings.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Passenger Services</h4>
+          <ul>
+            <li><a href="/">Book Train Ticket</a></li>
+            <li><a href="/pnr.html">PNR Status Inquiry</a></li>
+            <li><a href="/my-bookings.html">My Bookings</a></li>
+            <li><a href="/schedule.html">Train Timetable & Schedules</a></li>
+            <li><a href="/live-status.html">Live Train Running Status</a></li>
+            <li><a href="/station-board.html">Station Live Board</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Security & Architecture</h4>
+          <ul>
+            <li><a href="#">ACID Database Transactions</a></li>
+            <li><a href="#">Parameterized SQL Queries</a></li>
+            <li><a href="#">Bcrypt Password Hashing</a></li>
+            <li><a href="/admin.html">Admin Operations</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>24x7 Railway Helplines</h4>
+          <p class="helpline-text">Passenger Enquiry: <strong>139</strong></p>
+          <p class="helpline-text">Security & Medical: <strong>182</strong></p>
+          <p class="helpline-text-last">Support: support@railora.gov.in</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Railora. All Rights Reserved. Dedicated to Indian Railways Commuters.</div>
+        <div>Compliant with Indian Railways Reservation Guidelines.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Prefill logged in user details if available
+      const user = getUser();
+      if (user) {
+        const nameInput = document.getElementById('contact-name');
+        const emailInput = document.getElementById('contact-email');
+        const phoneInput = document.getElementById('contact-phone');
+        if (nameInput && user.name) nameInput.value = user.name;
+        if (emailInput && user.email) emailInput.value = user.email;
+        if (phoneInput && user.phone) phoneInput.value = user.phone;
+      }
+
+      // 2. Load FAQs from backend API
+      await loadFaqs();
+
+      // 3. Attach Form Submit Handler
+      const form = document.getElementById('contact-form');
+      if (form) {
+        form.addEventListener('submit', handleContactSubmit);
+      }
+    });
+
+    async function loadFaqs() {
+      const container = document.getElementById('faq-accordion-container');
+      try {
+        const res = await fetch('/api/contact/faqs');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.faqs)) {
+          container.innerHTML = data.faqs.map((faq, index) => `
+            <div class="faq-item">
+              <button type="button" class="faq-question" onclick="toggleFaq(${index})">
+                <span>${escapeHtml(faq.q)}</span>
+                <i class="fa-solid fa-chevron-down faq-chevron" id="faq-chevron-${index}"></i>
+              </button>
+              <div class="faq-answer" id="faq-answer-${index}">
+                <p>${escapeHtml(faq.a)}</p>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = '<p class="text-muted text-center">FAQs are currently updating. Please check back shortly.</p>';
+        }
+      } catch (err) {
+        console.error('Error loading FAQs:', err);
+        container.innerHTML = '<p class="text-muted text-center">Helpline 139 is available 24x7 for all passenger inquiries.</p>';
+      }
+    }
+
+    function toggleFaq(index) {
+      const answer = document.getElementById(`faq-answer-${index}`);
+      const chevron = document.getElementById(`faq-chevron-${index}`);
+      if (!answer) return;
+
+      const isOpen = answer.style.display === 'block';
+      // Close all first
+      document.querySelectorAll('.faq-answer').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.faq-chevron').forEach(el => el.classList.remove('rotate-180'));
+
+      if (!isOpen) {
+        answer.style.display = 'block';
+        if (chevron) chevron.classList.add('rotate-180');
+      }
+    }
+
+    async function handleContactSubmit(e) {
+      e.preventDefault();
+      const alertBox = document.getElementById('contact-alert');
+      const submitBtn = document.getElementById('btn-submit-contact');
+
+      alertBox.style.display = 'none';
+      alertBox.className = 'alert-box';
+
+      const payload = {
+        name: document.getElementById('contact-name').value.trim(),
+        email: document.getElementById('contact-email').value.trim(),
+        phone: document.getElementById('contact-phone').value.trim(),
+        category: document.getElementById('contact-category').value,
+        subject: document.getElementById('contact-subject').value.trim(),
+        message: document.getElementById('contact-message').value.trim()
+      };
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+
+        const res = await fetch('/api/contact/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          alertBox.className = 'alert-box alert-success';
+          alertBox.innerHTML = `
+            <div class="alert-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div>
+              <strong>Grievance Ticket Generated!</strong>
+              <p>${data.message}</p>
+              <div class="ticket-tag">Reference ID: <strong>${data.ticket_id}</strong></div>
+            </div>
+          `;
+          alertBox.style.display = 'flex';
+          document.getElementById('contact-subject').value = '';
+          document.getElementById('contact-message').value = '';
+          alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          alertBox.className = 'alert-box alert-danger';
+          alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${data.message || 'Failed to submit grievance.'}`;
+          alertBox.style.display = 'flex';
+        }
+      } catch (err) {
+        alertBox.className = 'alert-box alert-danger';
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Network error: ${err.message}`;
+        alertBox.style.display = 'flex';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Grievance Ticket';
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+
+</html>

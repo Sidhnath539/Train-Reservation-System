@@ -93,6 +93,66 @@ async function initDb(retries = 3, delayMs = 2500) {
         if (tables.length > 0) {
           tablesExist = true;
           console.log(' Connected to MySQL database. Railway tables verified.');
+
+          // Check and auto-create auxiliary tables if missing (payments, cancellations, refunds, contact_messages)
+          const [paymentTables] = await pool.query("SHOW TABLES LIKE 'payments'");
+          if (paymentTables.length === 0) {
+            console.log('Auto-migrating payments, cancellations, refunds and contact tables...');
+            await pool.query(`
+              CREATE TABLE IF NOT EXISTS \`payments\` (
+                \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+                \`booking_id\` INT NOT NULL,
+                \`user_id\` INT NOT NULL,
+                \`transaction_id\` VARCHAR(60) NOT NULL UNIQUE,
+                \`payment_method\` VARCHAR(30) NOT NULL,
+                \`amount\` DECIMAL(10,2) NOT NULL,
+                \`status\` ENUM('SUCCESS', 'FAILED', 'PENDING') DEFAULT 'SUCCESS',
+                \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (\`booking_id\`) REFERENCES \`bookings\`(\`id\`) ON DELETE CASCADE,
+                FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+              CREATE TABLE IF NOT EXISTS \`cancellations\` (
+                \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+                \`booking_id\` INT NOT NULL,
+                \`user_id\` INT NOT NULL,
+                \`pnr_number\` VARCHAR(10) NOT NULL,
+                \`cancellation_reason\` VARCHAR(255) DEFAULT 'Change of travel plans',
+                \`cancellation_charge\` DECIMAL(10,2) NOT NULL DEFAULT 60.00,
+                \`refund_amount\` DECIMAL(10,2) NOT NULL,
+                \`status\` ENUM('CANCELLED', 'PARTIALLY_CANCELLED') DEFAULT 'CANCELLED',
+                \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (\`booking_id\`) REFERENCES \`bookings\`(\`id\`) ON DELETE CASCADE,
+                FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+              CREATE TABLE IF NOT EXISTS \`refunds\` (
+                \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+                \`cancellation_id\` INT NOT NULL,
+                \`booking_id\` INT NOT NULL,
+                \`user_id\` INT NOT NULL,
+                \`refund_transaction_id\` VARCHAR(60) NOT NULL UNIQUE,
+                \`amount\` DECIMAL(10,2) NOT NULL,
+                \`status\` ENUM('PROCESSED', 'PENDING', 'FAILED') DEFAULT 'PROCESSED',
+                \`processed_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (\`cancellation_id\`) REFERENCES \`cancellations\`(\`id\`) ON DELETE CASCADE,
+                FOREIGN KEY (\`booking_id\`) REFERENCES \`bookings\`(\`id\`) ON DELETE CASCADE,
+                FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+              CREATE TABLE IF NOT EXISTS \`contact_messages\` (
+                \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+                \`name\` VARCHAR(100) NOT NULL,
+                \`email\` VARCHAR(100) NOT NULL,
+                \`phone\` VARCHAR(20) DEFAULT NULL,
+                \`category\` VARCHAR(50) DEFAULT 'General Enquiry',
+                \`subject\` VARCHAR(150) NOT NULL,
+                \`message\` TEXT NOT NULL,
+                \`status\` ENUM('NEW', 'IN_PROGRESS', 'RESOLVED') DEFAULT 'NEW',
+                \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            `);
+          }
         }
       } catch (dbErr) {
         // If the database doesn't exist on local XAMPP, try creating it automatically
